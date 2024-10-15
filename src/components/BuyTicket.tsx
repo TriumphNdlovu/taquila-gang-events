@@ -1,120 +1,185 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import supabase from '../supabaseClient';
-
-interface BuyTicketProps {
-  eventId: string;
-  title: string;
-  price: number;
-  date: string;
-  time: string;
-}
+import { Event } from '../models/event';
+import { fetchEventById } from '../services/eventService';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const BuyTicket: React.FC = () => {
-  const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
-  
+  const { eventId } = useParams<{ eventId: string }>();
+
+  const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [buyerEmail, setBuyerEmail] = useState<string>('');
   const [buyerName, setBuyerName] = useState<string>('');
   const [buyerPhoneNumber, setBuyerPhoneNumber] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPaymentInitiated, setIsPaymentInitiated] = useState<boolean>(false);
 
-  const handleBuyTicket = async () => {
-    setLoading(true);
-    setError(null);
+  useEffect(() => {
+    const getEvent = async () => {
+      const eventData = await fetchEventById(eventId!);
 
-    try {
-      const tickets = Array.from({ length: quantity }, () => ({
-        event_id: eventId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        buyer_phone_number: buyerPhoneNumber,
-      }));
+      // Formatting date
+      const isoDate = eventData!.date;
+      const dateObject = new Date(isoDate);
+      const formattedDate = dateObject.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+      eventData!.date = formattedDate;
 
-      const { error } = await supabase.from('tickets').insert(tickets);
+      setEvent(eventData);
+    };
 
-      if (error) {
-        setError('Failed to purchase tickets. Please try again.');
-        console.error(error);
-      } else {
-        navigate('/my-tickets');
-      }
-    } catch (error) {
-      console.error('Error purchasing tickets:', error);
-      setError('Something went wrong. Please try again later.');
-    } finally {
-      setLoading(false);
+    getEvent();
+  }, [eventId]);
+
+  const handleBuyTicket = () => {
+    if (event) {
+      setIsPaymentInitiated(true); // Show the payment form
+    }
+  };
+
+  const handleQuantityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setQuantity(Number(event.target.value));
+  };
+
+  const validateInputs = (): boolean => {
+    if (!buyerName || !buyerEmail || !buyerPhoneNumber) {
+      setError('Please fill in all fields.');
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(buyerEmail)) {
+      setError('Please enter a valid email address.');
+      return false;
+    }
+    if (!/^\d+$/.test(buyerPhoneNumber)) {
+      setError('Please enter a valid phone number.');
+      return false;
+    }
+    setError(null); // Clear any previous errors
+    return true;
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent form submission
+    if (validateInputs()) {
+      // If validation passes, submit the form
+      event.currentTarget.submit();
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Purchase Tickets</h1>
+    <div className="max-w-md mx-auto p-6 text-white">
+      <div className="text-center text-4xl font-bold my-6">
+        <h1>Purchase your ticket below!</h1>
+      </div>
+      {event ? (
+        <div className="border border-gray-700 rounded-lg text-white shadow-md p-4 items-center">
+          <h2 className="text-2xl font-bold ">{event.title}</h2>
+          <p>at {event.venue}</p>
+          <p>{event.date}</p>
+          <p>ZAR {event.price} each</p>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+          {/* Quantity Selector */}
+          <div className="my-4">
+            <label htmlFor="quantity" className="block text-lg font-semibold mb-2">How many tickets:</label>
+            <select 
+              id="quantity"
+              value={quantity}
+              onChange={handleQuantityChange}
+              className="w-full p-2 border border-gray-400 rounded-md text-black"
+            >
+              {[...Array(10).keys()].map((_, i) => (
+                <option key={i + 1} value={i + 1}>{i + 1}</option>
+              ))}
+            </select>
+          </div>
 
-      <form 
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleBuyTicket();
-        }} 
-        className="space-y-4"
-      >
-        <div>
-          <label className="block text-sm font-medium mb-1">Name</label>
-          <input
-            type="text"
-            value={buyerName}
-            onChange={(e) => setBuyerName(e.target.value)}
-            required
-            className="w-full border border-gray-300 px-4 py-2 rounded"
-          />
+          {/* Total Price Display */}
+          <p className="text-lg font-semibold my-2 text-green-800">Total: ZAR {(event.price * quantity).toFixed(2)}</p>
+
+          {error && <p className="text-red-500">{error}</p>}
+          {!isPaymentInitiated ? (
+            <button 
+              onClick={handleBuyTicket} 
+              className="border border-black text-black px-4 py-2 w-full rounded-md hover:bg-black hover:text-white transition"
+            >
+              Buy
+            </button>
+          ) : (
+            // Render Fastpay form when payment is initiated
+            <form
+              name="PayFastPayNowForm"
+              action="https://payment.payfast.io/eng/process"
+              method="post"
+              onSubmit={handleSubmit}
+            >
+              <input type="hidden" name="cmd" value="_paynow" required />
+              <input type="hidden" name="receiver" pattern="[0-9]" value="24876753" required />
+              <input type="hidden" name="return_url" value="https://www.returnURL.com" />
+              <input type="hidden" name="cancel_url" value="https://www.CancelURL.com" />
+              <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
+              <input type="hidden" name="amount" value={(event.price * quantity).toFixed(2)} required />
+              <input type="hidden" name="item_name" maxLength={255} value={event.title} required />
+              <input type="hidden" name="item_description" maxLength={255} value={'at ' + event.venue} />
+
+              <div className='text-white'>
+
+              
+              <div className="my-4">
+                <label htmlFor="buyerName" className="block text-lg font-semibold mb-2">Fullname:</label>
+                <input
+                  type="text"
+                  id="buyerName"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder=''
+                  required
+                  className="w-full p-2 border border-gray-400 rounded-md text-black"
+                />
+              </div>
+              <div className="my-4">
+                <label htmlFor="buyerEmail" className="block text-lg font-semibold mb-2">Email Address:</label>
+                <input
+                  type="email"
+                  id="buyerEmail"
+                  value={buyerEmail}
+                  onChange={(e) => setBuyerEmail(e.target.value)}
+                  placeholder='e.g. tequilagang@gmail.com'
+                  required
+                  className="w-full p-2 border border-gray-400 rounded-md text-black"
+                />
+              </div>
+              <div className="my-4">
+                <label htmlFor="buyerPhoneNumber" className="block text-lg font-semibold mb-2">Phone Number:</label>
+                <input
+                  type="tel"
+                  id="buyerPhoneNumber"
+                  value={buyerPhoneNumber}
+                  onChange={(e) => setBuyerPhoneNumber(e.target.value)}
+                  required
+                  placeholder='e.g. 0712345678'
+                  className="w-full p-2 border border-gray-400 rounded-md text-black"
+                />
+              </div>
+              
+              <div className="text-center">
+                <input
+                  type="image"
+                  src="https://my.payfast.io/images/buttons/PayNow/Dark-Large-PayNow.png"
+                  alt="Pay Now"
+                  title="Pay Now with Payfast"
+                />
+              </div>
+              </div>
+            </form>
+          )}
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
-            type="email"
-            value={buyerEmail}
-            onChange={(e) => setBuyerEmail(e.target.value)}
-            required
-            className="w-full border border-gray-300 px-4 py-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Phone Number</label>
-          <input
-            type="text"
-            value={buyerPhoneNumber}
-            onChange={(e) => setBuyerPhoneNumber(e.target.value)}
-            required
-            className="w-full border border-gray-300 px-4 py-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Quantity</label>
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            min={1}
-            required
-            className="w-full border border-gray-300 px-4 py-2 rounded"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
-          disabled={loading}
-        >
-          {loading ? 'Processing...' : 'Buy Tickets'}
-        </button>
-      </form>
+      ) : (
+        <p className="text-gray-400">Loading...</p>
+      )}
     </div>
   );
 };

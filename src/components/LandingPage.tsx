@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Event } from '../models/event';
 import { fetchEventServices } from '../services/eventService';
-import {LoadingSpinner} from './LoadingSpinner';
+import { LoadingSpinner } from './LoadingSpinner';
 
 const LandingPage: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
       try {
         const eventsData = await fetchEventServices();
         if (eventsData.length > 0) {
-          setEvent(eventsData[0]); // Display the first event for simplicity.
+          setEvent(eventsData[0]);
         }
         setLoading(false);
       } catch (error) {
@@ -30,21 +30,28 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <header className="text-center text-4xl font-bold my-6">
-        <h1>Welcome to TeekShop</h1>
-        <p>Your gateway to amazing events!</p>
+    <div className="max-w-4xl mx-auto p-6 h-full">
+      <header className="text-center text-4xl font-bold my-6 text-white">
+        <h1>Welcome to Taquila Gang Ticket Shop</h1>
       </header>
 
       <main>
+        <p className='text-2xl font-bold text-white'>Events</p>
         {event ? (
           <div className="border rounded-lg p-6 shadow-md bg-white">
+            {/* Event Poster */}
+            <img
+              src="/EventPoster.jpeg" // Adjust the path accordingly
+              alt={`${event.title} poster`}
+              className="w-full h-auto rounded-lg mb-4" // Ensures the image is responsive
+            />
             <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
+            <p>Venue: {event.venue}</p> {/* Corrected the spelling from "vanue" to "venue" */}
             <p>Date: {new Date(event.date).toLocaleDateString()}</p>
             <p>Time: {event.time}</p>
             <p>Price: ZAR {event.price.toFixed(2)}</p>
-            <Link to={`/buy-ticket/${event.eventId}`}>
-              <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+            <Link to={`/buy-ticket/${event.eventid}`}>
+              <button className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition">
                 Buy Ticket
               </button>
             </Link>
@@ -55,7 +62,7 @@ const LandingPage: React.FC = () => {
       </main>
 
       <footer className="text-center mt-8 text-gray-600">
-        <p>&copy; 2024 TeekShop. All rights reserved.</p>
+        <p>&copy; 2024 TEQUILA GANG. All rights reserved.</p>
         <p>Follow us on social media for the latest updates.</p>
       </footer>
     </div>
