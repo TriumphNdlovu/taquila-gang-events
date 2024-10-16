@@ -6,7 +6,13 @@ require('dotenv').config();
 
 
 const app = express();
-app.use(cors());
+app.use(cors(
+    {
+    origin: ["https://tequila-gang-events.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true
+}
+));
 app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
