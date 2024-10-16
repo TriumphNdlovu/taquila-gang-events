@@ -29,7 +29,7 @@ export const sendTicketEmail = async (buyer_email: string, pdf_ticket: any) => {
     // console.log(response);
 
     try {
-        const response = await axios.post('http://localhost:3001/sendTicket', {
+        const response = await axios.post('https://tequila-gang-events.vercel.app/sendTicket', {
             buyer_email,
             pdf_ticket
         });

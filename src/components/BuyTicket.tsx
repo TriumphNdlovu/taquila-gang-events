@@ -126,8 +126,8 @@ const BuyTicket: React.FC = () => {
             >
               <input type="hidden" name="cmd" value="_paynow" required />
               <input type="hidden" name="receiver" pattern="[0-9]" value="24876753" required />
-              <input type="hidden" name="return_url" value={`http://localhost:3000/payment-success?ticketId=${ticketId}`}/>
-              <input type="hidden" name="cancel_url" value={`http://localhost:3000/payment-failed`} />
+              <input type="hidden" name="return_url" value={`https://tequila-gang-events.vercel.app/payment-success?ticketId=${ticketId}`}/>
+              <input type="hidden" name="cancel_url" value={`https://tequila-gang-events.vercel.app/payment-failed`} />
               <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
               <input type="hidden" name="amount" value="5" required />
               {/* <input type="hidden" name="amount" value={(event.price * quantity).toFixed(2)} required /> */}
