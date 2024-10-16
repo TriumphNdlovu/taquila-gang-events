@@ -112,7 +112,7 @@ const BuyTicket: React.FC = () => {
           {!isPaymentInitiated ? (
             <button 
               onClick={handleBuyTicket} 
-              className="border border-black text-black px-4 py-2 w-full rounded-md hover:bg-black hover:text-white transition"
+              className="border border-white text-white px-4 py-2 w-full rounded-md hover:bg-black hover:text-white transition"
             >
               Buy
             </button>

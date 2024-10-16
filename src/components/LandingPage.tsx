@@ -32,7 +32,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 h-full">
       <header className="text-center text-4xl font-bold my-6 text-white">
-        <h1>Welcome to Taquila Gang Ticket Shop</h1>
+        <h1>Welcome to TQG Ticket Shop</h1>
       </header>
 
       <main>
