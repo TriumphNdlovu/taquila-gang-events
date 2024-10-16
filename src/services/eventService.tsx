@@ -17,7 +17,7 @@ export const fetchEventById = async (eventId: string): Promise<Event | null> => 
   const { data, error } = await supabase
     .from('events')
     .select('*')
-    .eq('eventid', eventId)
+    .eq('eventid', 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd') // will unhard code this later on
     .single();
 
   if (error) {

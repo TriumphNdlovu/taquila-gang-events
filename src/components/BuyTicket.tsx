@@ -2,6 +2,7 @@ import { Event } from '../models/event';
 import { fetchEventById } from '../services/eventService';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { genarateTicketId } from '../services/ticketService';
 
 const BuyTicket: React.FC = () => {
   const navigate = useNavigate();
@@ -14,11 +15,12 @@ const BuyTicket: React.FC = () => {
   const [buyerPhoneNumber, setBuyerPhoneNumber] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isPaymentInitiated, setIsPaymentInitiated] = useState<boolean>(false);
+  const [ticketId , setTicketId] = useState<string>('');
 
   useEffect(() => {
     const getEvent = async () => {
       const eventData = await fetchEventById(eventId!);
-
+      const ticketId = await genarateTicketId();
       // Formatting date
       const isoDate = eventData!.date;
       const dateObject = new Date(isoDate);
@@ -30,6 +32,7 @@ const BuyTicket: React.FC = () => {
       eventData!.date = formattedDate;
 
       setEvent(eventData);
+      setTicketId(ticketId!);
     };
 
     getEvent();
@@ -62,12 +65,17 @@ const BuyTicket: React.FC = () => {
     return true;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission
+  const handleSubmit = (eventt: React.FormEvent<HTMLFormElement>) => {
+    eventt.preventDefault(); // Prevent form submission
     if (validateInputs()) {
-      // If validation passes, submit the form
-      event.currentTarget.submit();
+        localStorage.setItem('cartTotal', (event?.price! * quantity).toFixed(2));
+        localStorage.setItem('buyerName', buyerName);
+        localStorage.setItem('buyerEmail', buyerEmail);
+        localStorage.setItem('buyerPhoneNumber', buyerPhoneNumber);
+        localStorage.setItem('quantity', quantity.toString());
+      eventt.currentTarget.submit();
     }
+
   };
 
   return (
@@ -118,12 +126,16 @@ const BuyTicket: React.FC = () => {
             >
               <input type="hidden" name="cmd" value="_paynow" required />
               <input type="hidden" name="receiver" pattern="[0-9]" value="24876753" required />
-              <input type="hidden" name="return_url" value="https://www.returnURL.com" />
-              <input type="hidden" name="cancel_url" value="https://www.CancelURL.com" />
+              <input type="hidden" name="return_url" value={`http://localhost:3000/payment-success?ticketId=${ticketId}`}/>
+              <input type="hidden" name="cancel_url" value={`http://localhost:3000/payment-failed`} />
               <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
-              <input type="hidden" name="amount" value={(event.price * quantity).toFixed(2)} required />
+              <input type="hidden" name="amount" value="5" required />
+              {/* <input type="hidden" name="amount" value={(event.price * quantity).toFixed(2)} required /> */}
               <input type="hidden" name="item_name" maxLength={255} value={event.title} required />
               <input type="hidden" name="item_description" maxLength={255} value={'at ' + event.venue} />
+              <input type="hidden" name="name_first" value={buyerName}/>
+              <input type="hidden" name="email_address" value={buyerEmail}/>
+              <input type="hidden" name="cell_number" value={buyerPhoneNumber}/> 
 
               <div className='text-white'>
 
@@ -135,7 +147,7 @@ const BuyTicket: React.FC = () => {
                   id="buyerName"
                   value={buyerName}
                   onChange={(e) => setBuyerName(e.target.value)}
-                  placeholder=''
+                  placeholder='e.g John Doe'
                   required
                   className="w-full p-2 border border-gray-400 rounded-md text-black"
                 />
