@@ -14,6 +14,7 @@ const TicketValidPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-green-100 flex flex-col items-center justify-center p-4">
+      <ToastContainer />
       <h1 className="text-2xl font-bold mb-4 text-green-500">Ticket Valid</h1>
       <p className="text-gray-800 mb-4">The scanned ticket is valid.</p>
       <p className="text-gray-600">Ticket ID: {ticketId}</p>
@@ -23,7 +24,7 @@ const TicketValidPage: React.FC = () => {
               {
                 window.location.href = '/abottleofbread'
                 await redeemticket(ticketId);
-                redeemed_notify
+                redeemed_notify();
 
               } 
             }
