@@ -106,11 +106,26 @@ const BuyTicket: React.FC = () => {
             ) : (
               // Render Fastpay form when payment is initiated
               <form
-  name="PayFastPayNowForm"
-  action="https://payment.payfast.io/eng/process"
-  method="post"
-  onSubmit={handleSubmit}
->
+                name="PayFastPayNowForm"
+                action="https://payment.payfast.io/eng/process"
+                method="post"
+                onSubmit={handleSubmit}
+              >
+
+                <input type="hidden" name="cmd" value="_paynow" required />
+                <input type="hidden" name="receiver" pattern="[0-9]" value="24876753" required />
+                <input type="hidden" name="return_url" value={'https://tequila-gang-events.vercel.app/payment-success?ticketId=${ticketId}'}/>
+                <input type="hidden" name="cancel_url" value={'https://tequila-gang-events.vercel.app/payment-failed'} />
+                <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
+                <input type="hidden" name="amount" value="5" required />
+                <input type="hidden" name="item_name" maxLength={255} value={event.title} required />
+                <input type="hidden" name="item_description" maxLength={255} value={'at ' + event.venue} />
+                <input type="hidden" name="name_first" value={buyerName}/>
+                <input type="hidden" name="email_address" value={buyerEmail}/>
+                <input type="hidden" name="cell_number" value={buyerPhoneNumber}/> 
+
+
+
   {error && (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
       <span className="block sm:inline">{error}</span>
