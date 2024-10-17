@@ -14,8 +14,8 @@ import PurchasedTickets from './components/PurchasedTickets';
 const App: React.FC = () => {
   return (
     <Router>
-      <div className='bg-[#0c0c0d] h-full'>
         <Navbar />
+      <div className='bg-red-600 h-screen'>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/buy-ticket/:eventId" element={<BuyTicket />} />

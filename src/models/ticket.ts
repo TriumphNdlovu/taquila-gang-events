@@ -6,4 +6,5 @@ export interface Ticket {
   buyer_name: string;
   buyer_phone_number: string;
   is_redeemed: boolean;
+  created_at: string;
 };

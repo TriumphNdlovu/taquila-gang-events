@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAllTickets } from '../services/ticketService'; // Make sure this function fetches tickets correctly
 import { Ticket } from '../models/ticket';
+import { LoadingSpinner } from './LoadingSpinner';
 
 const PurchasedTickets: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -22,13 +23,14 @@ const PurchasedTickets: React.FC = () => {
     getTickets();
   }, []);
 
+
   return (
     <div className="bg-black text-white p-6 min-h-screen">
       <div className="text-center text-4xl font-bold my-6">
         <h1>All Purchased Tickets</h1>
       </div>
       {loading ? (
-        <p className="text-gray-400">Loading...</p>
+        <LoadingSpinner />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -37,21 +39,23 @@ const PurchasedTickets: React.FC = () => {
             <thead>
               <tr className="bg-gray-800">
                 <th className="px-4 py-2 text-left">Ticket ID</th>
-                <th className="px-4 py-2 text-left">Quantity</th>
                 <th className="px-4 py-2 text-left">Buyer Name</th>
                 <th className="px-4 py-2 text-left">Buyer Email</th>
                 <th className="px-4 py-2 text-left">Phone Number</th>
+                <th className="px-4 py-2 text-left">Transaction time</th>
                 <th className="px-4 py-2 text-left">Redeemed</th>
+                {/* <th className="px-4 py-2 text-left">Quantity</th> */}
               </tr>
             </thead>
             <tbody>
               {tickets.map((ticket) => (
                 <tr key={ticket.ticketid} className="border-t border-gray-700">
                   <td className="px-4 py-2">{ticket.ticketid}</td>
-                  <td className="px-4 py-2">{ticket.quantity}</td>
                   <td className="px-4 py-2">{ticket.buyer_name}</td>
                   <td className="px-4 py-2">{ticket.buyer_email}</td>
                   <td className="px-4 py-2">{ticket.buyer_phone_number}</td>
+                <td className="px-4 py-2">{ticket.created_at}</td>
+                  {/* <td className="px-4 py-2">{ticket.quantity}</td> */}
                   <td className="px-4 py-2">
                     {ticket.is_redeemed ? (
                       <span className="text-green-500">Yes</span>
