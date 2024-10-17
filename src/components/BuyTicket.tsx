@@ -21,7 +21,7 @@ const BuyTicket: React.FC = () => {
     const getEvent = async () => {
       const eventData = await fetchEventById(eventId!);
       const ticketId = await genarateTicketId();
-      // Formatting date
+   
       const isoDate = eventData!.date;
       const dateObject = new Date(isoDate);
       const formattedDate = dateObject.toLocaleDateString('en-US', {
@@ -61,12 +61,12 @@ const BuyTicket: React.FC = () => {
       setError('Please enter a valid phone number.');
       return false;
     }
-    setError(null); // Clear any previous errors
+    setError(null); 
     return true;
   };
 
   const handleSubmit = (eventt: React.FormEvent<HTMLFormElement>) => {
-    eventt.preventDefault(); // Prevent form submission
+    eventt.preventDefault();
     if (validateInputs()) {
         localStorage.setItem('cartTotal', (event?.price! * quantity).toFixed(2));
         localStorage.setItem('buyerName', buyerName);
@@ -130,7 +130,6 @@ const BuyTicket: React.FC = () => {
               <input type="hidden" name="cancel_url" value={`https://tequila-gang-events.vercel.app/payment-failed`} />
               <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
               <input type="hidden" name="amount" value="5" required />
-              {/* <input type="hidden" name="amount" value={(event.price * quantity).toFixed(2)} required /> */}
               <input type="hidden" name="item_name" maxLength={255} value={event.title} required />
               <input type="hidden" name="item_description" maxLength={255} value={'at ' + event.venue} />
               <input type="hidden" name="name_first" value={buyerName}/>

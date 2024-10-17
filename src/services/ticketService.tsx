@@ -4,7 +4,7 @@ import  supabase  from "../supabaseClient";
 export const addTicket = async (ticketId: string) => {
     try {
 
-        // Insert the new ticket into the 'tickets' table in Supabase
+     
         const { error: insertError } = await supabase.from('tickets').insert([
             {
                 eventid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', // will unhard code this later on

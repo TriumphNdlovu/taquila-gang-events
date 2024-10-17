@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import PaymentSuccess from './components/PaymentSuccess';
 import PaymentFailed from './components/PaymentFailed';
 import PaymentCanceled from './components/PaymentCanceled';
+import Thanks from './components/Thanks';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,8 @@ const App: React.FC = () => {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/payment-cancel" element={<PaymentCanceled />} />
+          <Route path="/thanks" element={<Thanks/>} />
+          <Route path="*" element={<h1>Not Found</h1>} />
         </Routes>
       </div>
        
