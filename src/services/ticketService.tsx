@@ -31,29 +31,29 @@ export const addTicket = async (ticketId: string) => {
     }
 };
 
-export const validateTicket = async (ticketId: string) => {
-    try {
-        const { data, error } = await supabase
-            .from('tickets')
-            .select('*')
-            .eq('ticketid', ticketId)
-            .single();
+export const validateTicket = async (ticketId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .eq('ticketid', ticketId)
+      .single(); // Fetch a single record based on ticket ID
 
-        if (error) {
-            console.error('Error fetching ticket:', error.message);
-            return null;
-        }
-
-        if(data.size() == 0) {
-            console.error('Ticket not found');
-            return false;
-        }
-
-        return true;
-
-    } catch (error) {
-        console.error('An unexpected error occurred:', error);
+    if (error) {
+      console.error('Error fetching ticket:', error.message);
+      return false; // Return false if an error occurred during the fetch
     }
+
+    if (!data) {
+      console.error('Ticket not found');
+      return false; // Return false if no ticket is found
+    }
+
+    return true; // If data is found, the ticket is valid
+  } catch (error) {
+    console.error('An unexpected error occurred:', error);
+    return false; // Return false in case of any unexpected errors
+  }
 };
 
 export const genarateTicketId = async () => {
