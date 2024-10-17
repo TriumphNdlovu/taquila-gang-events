@@ -31,6 +31,24 @@ export const addTicket = async (ticketId: string) => {
     }
 };
 
+export const redeemticket = async (ticketId : string) =>
+{
+    try {
+        const { error: updateError } = await supabase.from('tickets').update({
+            is_redeemed: true,
+        }).eq('ticketid', ticketId);
+
+        if (updateError) {
+            console.error('Error updating ticket:', updateError.message);
+            return;
+        }
+
+        console.log('Ticket redeemed successfully');
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+    }
+}
+
 export const validateTicket = async (ticketId: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase

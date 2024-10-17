@@ -1,10 +1,14 @@
 // src/pages/TicketValidPage.tsx
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { redeemticket } from '../services/ticketService';
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 const TicketValidPage: React.FC = () => {
   const location = useLocation();
   const { ticketId } = location.state as { ticketId: string };
+  const redeemed_notify = () => toast("✅ ticket has been redeemed");
 
 
 
@@ -15,7 +19,14 @@ const TicketValidPage: React.FC = () => {
       <p className="text-gray-600">Ticket ID: {ticketId}</p>
       {/* redeem and scan again */}
         <button
-            onClick={() => window.location.href = '/abottleofbread'}
+            onClick={async () => 
+              {
+                window.location.href = '/abottleofbread'
+                await redeemticket(ticketId);
+                redeemed_notify
+
+              } 
+            }
             className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition duration-300 ease-in-out"
         >
             Reedeem Ticket & Scan Again

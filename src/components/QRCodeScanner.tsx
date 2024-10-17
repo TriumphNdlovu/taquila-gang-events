@@ -29,7 +29,7 @@ const QRCodeScannerPage: React.FC = () => {
 
       if (isValid) {
         // If validation is successful, navigate to the desired page
-        navigate('/ticket-valid', { state: { ticketId: scannedData } });
+        navigate('/validticket', { state: { ticketId: scannedData } });
       } else {
         setError('Invalid ticket. Please try again.');
       }
