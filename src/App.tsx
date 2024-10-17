@@ -9,6 +9,7 @@ import PaymentCanceled from './components/PaymentCanceled';
 import Thanks from './components/Thanks';
 import QRCodeScanner from './components/QRCodeScanner';
 import TicketValidPage from './components/TicketValidPage';
+import PurchasedTickets from './components/PurchasedTickets';
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/payment-cancel" element={<PaymentCanceled />} />
           <Route path="/abottleofbread" element={<QRCodeScanner />} />
           <Route path="/validticket" element={<TicketValidPage />} />
+          <Route path="/allbreads" element={<PurchasedTickets/>} />
           <Route path="/thanks" element={<Thanks/>} />
           <Route path="*" element={<h1 className='text-white min-h-screen flex justify-center items-center'>
             <div>

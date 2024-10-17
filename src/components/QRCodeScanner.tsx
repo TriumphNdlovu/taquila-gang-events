@@ -1,7 +1,7 @@
 // src/pages/QRCodeScannerPage.tsx
 import React, { useState } from 'react';
 import { useZxing } from 'react-zxing';
-import { validateTicket } from '../services/ticketService';
+import { is_redeemed, validateTicket } from '../services/ticketService';
 import { useNavigate } from 'react-router-dom';
 
 const QRCodeScannerPage: React.FC = () => {
@@ -25,14 +25,22 @@ const QRCodeScannerPage: React.FC = () => {
 
   const handleValidation = async (scannedData: string) => {
     try {
-      const isValid = await validateTicket(scannedData); // Call the validation function
+      const isValid = await validateTicket(scannedData);
 
       if (isValid) {
-        // If validation is successful, navigate to the desired page
-        navigate('/validticket', { state: { ticketId: scannedData } });
+
+        const isRedeemed = await is_redeemed(scannedData);
+
+        if(isRedeemed){
+          setError('Ticket has already been redeemed');
+        }
+        else{
+          navigate('/validticket', { state: { ticketId: scannedData } });
+        }
       } else {
         setError('Invalid ticket. Please try again.');
       }
+
     } catch (validationError) {
       console.error('Error during validation:', validationError);
       setError('An error occurred while validating the ticket.');

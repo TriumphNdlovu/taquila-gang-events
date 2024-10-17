@@ -49,6 +49,32 @@ export const redeemticket = async (ticketId : string) =>
     }
 }
 
+export const is_redeemed = async (ticketId : string) =>
+{
+    try {
+        const { data, error } = await supabase
+            .from('tickets')
+            .select('is_redeemed')
+            .eq('ticketid', ticketId)
+            .single();
+
+        if (error) {
+            console.error('Error fetching ticket:', error.message);
+            return false;
+        }
+
+        if (!data) {
+            console.error('Ticket not found');
+            return false;
+        }
+
+        return data.is_redeemed;
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        return false;
+    }
+}
+
 export const validateTicket = async (ticketId: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
@@ -73,6 +99,24 @@ export const validateTicket = async (ticketId: string): Promise<boolean> => {
     return false; // Return false in case of any unexpected errors
   }
 };
+
+export const fetchAllTickets = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('tickets')
+            .select('*');
+
+        if (error) {
+            console.error('Error fetching tickets:', error.message);
+            return [];
+        }
+
+        return data;
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        return [];
+    }
+}
 
 export const genarateTicketId = async () => {
     try {
