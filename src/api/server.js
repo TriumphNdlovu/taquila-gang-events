@@ -1,25 +1,5 @@
-const express = require('express');
 const nodemailer = require('nodemailer');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 require('dotenv').config();
-
-const app = express();
-
-
-app.use(cors({
-    origin: 'https://tequila-gang-events.vercel.app/sendTicket',
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization',
-         'Origin', 'Access-Control-Allow-Origin', 
-         'Access-Control-Allow-Headers', 'Access-Control-Allow-Methods', 'Access-Control-Allow-Credentials'],
-
-    credentials: true 
-}));
-app.use(bodyParser.json());
-
-
-
 
 const transporter = nodemailer.createTransport({
     host: 'da16.domains.co.za', 
@@ -31,8 +11,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-
-transporter.verify(function (error, success) {
+transporter.verify(function (error) {
     if (error) {
         console.error('SMTP connection error:', error);
     } else {
@@ -40,42 +19,55 @@ transporter.verify(function (error, success) {
     }
 });
 
+// Define the email sending function
+const sendTicketHandler = async (req, res) => {
+    if (req.method === 'POST') {
+        const { buyer_email, pdf_ticket } = req.body; 
 
-app.post('/sendTicket', async (req, res) => {
+        const pdfBuffer = Buffer.from(pdf_ticket, 'base64'); 
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    const { buyer_email, pdf_ticket } = req.body; 
+        const mailOptions = {
+            from: process.env.REACT_APP_EMAIL_USER,
+            to: buyer_email, 
+            subject: `Your Ticket for Tropical Summer Slash`,
+            text: `Hi ;), \n\nThank you for your purchase! Please find your ticket for Tropical Summer Slash attached.\n\nBest regards,\nTQG Team`,
+            attachments: [
+                {
+                    filename: `Tropical_Summer_Slash_Ticket.pdf`,
+                    content: pdfBuffer,
+                    contentType: 'application/pdf',
+                },
+            ],
+        };
 
-    const pdfBuffer = Buffer.from(pdf_ticket, 'base64'); 
-
-    
-    const mailOptions = {
-        from: process.env.REACT_APP_EMAIL_USER,
-        to: buyer_email, // Recipient's email
-        subject: `Your Ticket for Tropical Summer Slash`,
-        text: `Hi ;), \n\nThank you for your purchase! Please find your ticket for Tropical Summer Slash attached.\n\nBest regards,\nTQG Team`,
-        attachments: [
-            {
-                filename: `Tropical_Summer_Slash_Ticket.pdf`,
-                content: pdfBuffer,
-                contentType: 'application/pdf',
-            },
-        ],
-    };
-
-    try {
-        await transporter.sendMail(mailOptions); // Send the email
-        res.status(200).send('Email sent successfully');
-    } catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).send('Error sending email');
+        try {
+            await transporter.sendMail(mailOptions); 
+            res.status(200).send('Email sent successfully');
+        } catch (error) {
+            console.error('Error sending email:', error);
+            res.status(500).send('Error sending email');
+        }
+    } else {
+        res.status(405).json({ message: 'Method not allowed' });
     }
-});
+};
 
-// Start server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Allow CORS
+const allowCors = (fn) => async (req, res) => {
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+    return await fn(req, res);
+};
+
+// Export the handler function wrapped with CORS support
+module.exports = allowCors(sendTicketHandler);
