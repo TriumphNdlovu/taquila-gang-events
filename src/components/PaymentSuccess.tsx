@@ -20,6 +20,7 @@ const PaymentSuccess: React.FC = () => {
             // Check if the function has already been called
             if (!sendMailCalled.current) {
                 sendMailAndAddTicket();
+                downloadTicket();
                 sendMailCalled.current = true; // Set to true after the function is called
             }
         }
@@ -67,7 +68,7 @@ const PaymentSuccess: React.FC = () => {
                 <p className="mb-4 text-sm">Thank you for your purchase. The ticket has been sent to your email.</p>
                 <p className='mb-4 text-sm'>The download should start automatically. If not, click below:</p>
                 <a 
-                    className='mb-4 hover:cursor-pointer border hover:border-blue-600 text-xs'
+                    className='mb-4 hover:cursor-pointer border border-black hover:border-blue-600 text-xs'
                     onClick={downloadTicket}
                 >
                     Click here for Manual Download

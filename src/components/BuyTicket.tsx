@@ -40,7 +40,7 @@ const BuyTicket: React.FC = () => {
 
   const handleBuyTicket = () => {
     if (event) {
-      setIsPaymentInitiated(true); // Show the payment form
+      setIsPaymentInitiated(true); 
     }
   };
 
@@ -91,7 +91,7 @@ const BuyTicket: React.FC = () => {
           <p>ZAR {event.price} each</p>
 
           {/* Quantity Selector */}
-          <div className="my-4">
+          {/* <div className="my-4">
             <label htmlFor="quantity" className="block text-lg font-semibold mb-2">How many tickets:</label>
             <select 
               id="quantity"
@@ -103,10 +103,10 @@ const BuyTicket: React.FC = () => {
                 <option key={i + 1} value={i + 1}>{i + 1}</option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Total Price Display */}
-          <p className="text-lg font-semibold my-2 text-green-800">Total: ZAR {(event.price * quantity).toFixed(2)}</p>
+          <p className="text-lg font-semibold my-2 text-green-600">Total: ZAR {(event.price * quantity).toFixed(2)}</p>
 
           {error && <p className="text-red-500">{error}</p>}
           {!isPaymentInitiated ? (

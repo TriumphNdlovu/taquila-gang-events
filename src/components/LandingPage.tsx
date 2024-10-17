@@ -64,6 +64,7 @@ const LandingPage: React.FC = () => {
       <footer className="text-center mt-8 text-gray-600">
         <p>&copy; 2024 TEQUILA GANG. All rights reserved.</p>
         <p>Follow us on social media for the latest updates.</p>
+        
       </footer>
     </div>
   );

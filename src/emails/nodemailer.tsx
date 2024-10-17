@@ -9,6 +9,7 @@ export const sendTicketEmail = async (buyer_email: string, pdf_ticket: any) => {
         });
         console.log('Email sent:', response.data);
     } catch (error) {
+        
         console.error('Error sending email:', error);
     }
 
