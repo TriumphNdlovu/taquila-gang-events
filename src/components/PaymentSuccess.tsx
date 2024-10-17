@@ -12,19 +12,31 @@ const PaymentSuccess: React.FC = () => {
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const ticketId = params.get('ticketId');
-        if (ticketId) {
-            localStorage.setItem('ticketId', ticketId);
-            setTicketId(ticketId);
-            
-            // Check if the function has already been called
-            if (!sendMailCalled.current) {
-                sendMailAndAddTicket();
-                downloadTicket();
-                sendMailCalled.current = true; // Set to true after the function is called
-            }
+        const ticketIdParam = params.get('ticketId');
+        if (ticketIdParam) {
+            localStorage.setItem('ticketId', ticketIdParam);
+            setTicketId(ticketIdParam);
         }
-    }, []);
+    }, [location]);
+
+    useEffect(() => {
+        // Only call sendMailandDownload when ticketId is set and function hasn't been called
+        if (ticketId && !sendMailCalled.current) {
+            sendMailandDownload();
+        }
+    }, [ticketId]);
+
+    const sendMailandDownload = async () => {
+        sendMailCalled.current = true;
+        try {
+            await downloadTicket();
+            await sendMailAndAddTicket();
+            console.log('Email sent and ticket added');
+        } catch (error) {
+            console.error('Error in sendMailandDownload:', error);
+            sendMailCalled.current = false; // Reset to allow retry if needed
+        }
+    };
 
     const downloadTicket = async () => {
         if (!ticketId) {
@@ -53,9 +65,10 @@ const PaymentSuccess: React.FC = () => {
             }
 
             const ticketID = await addTicket(ticketId);
-            const pdfArray = await generateTicketPDF(ticketId!);
+            const pdfArray = await generateTicketPDF(ticketId);
             const pdf = pdfArray[0]; // Assume this is the PDF for the email attachment.
-            const dance = await sendTicketEmail(buyerEmail, pdf);
+            const response = await sendTicketEmail(buyerEmail, pdf);
+            console.log('Email response:', response);
         } catch (error) {
             console.error('Error sending email or adding ticket:', error);
         }
