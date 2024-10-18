@@ -1,4 +1,5 @@
 import  supabase  from "../supabaseClient";
+import { event_ticket_decrement } from "./eventService";
 
 
 export const addTicket = async (ticketId: string) => {
@@ -7,9 +8,9 @@ export const addTicket = async (ticketId: string) => {
      
         const { error: insertError } = await supabase.from('tickets').insert([
             {
-                eventid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', // will unhard code this later on
+                eventid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', 
                 ticketid: localStorage.getItem('ticketId') ,
-                orderid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', // will unhard code this later on
+                orderid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', 
                 buyer_email: localStorage.getItem('buyerEmail'),
                 buyer_name: localStorage.getItem('buyerName'),
                 buyer_phone_number: localStorage.getItem('buyerPhoneNumber'),
@@ -24,12 +25,16 @@ export const addTicket = async (ticketId: string) => {
         }
 
         console.log('Ticket added successfully');
+        //Todo: Take of the hard coded event id and take care of what happens when tickets reach zero
+        await event_ticket_decrement('f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd');
         return ticketId ;
 
     } catch (error) {
         console.error('An unexpected error occurred:', error);
     }
 };
+
+
 
 export const redeemticket = async (ticketId : string) =>
 {
@@ -81,22 +86,22 @@ export const validateTicket = async (ticketId: string): Promise<boolean> => {
       .from('tickets')
       .select('*')
       .eq('ticketid', ticketId)
-      .single(); // Fetch a single record based on ticket ID
+      .single(); 
 
     if (error) {
       console.error('Error fetching ticket:', error.message);
-      return false; // Return false if an error occurred during the fetch
+      return false; 
     }
 
     if (!data) {
       console.error('Ticket not found');
-      return false; // Return false if no ticket is found
+      return false; 
     }
 
-    return true; // If data is found, the ticket is valid
+    return true; 
   } catch (error) {
     console.error('An unexpected error occurred:', error);
-    return false; // Return false in case of any unexpected errors
+    return false; 
   }
 };
 

@@ -5,4 +5,5 @@ export interface Event {
   date: string;
   time: string;
   venue: string;
+  available_tickets: number;
 };

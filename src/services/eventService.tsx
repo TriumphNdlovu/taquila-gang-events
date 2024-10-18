@@ -26,3 +26,16 @@ export const fetchEventById = async (eventId: string): Promise<Event | null> => 
 
   return data as Event | null;
 }
+
+export const event_ticket_decrement = async (eventId: string) => {
+  const { data, error } = await supabase
+    .from('events')
+    .update({ available_tickets: { 'action': 'decrement', 'value': 1 } })
+    .eq('eventid', eventId);
+
+  if (error) {
+    throw new Error('Error decrementing ticket: ' + error.message);
+  }
+
+  return data;
+}

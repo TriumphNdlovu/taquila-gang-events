@@ -30,7 +30,7 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-black">
       <header className="text-center text-4xl font-bold my-6 text-white">
         <h1>Welcome to TQG Ticket Shop</h1>
       </header>
@@ -49,7 +49,8 @@ const LandingPage: React.FC = () => {
             <p>Venue: {event.venue}</p> 
             <p>Date: {new Date(event.date).toLocaleDateString()}</p>
             <p>Time: {event.time}</p>
-            <p>Price: ZAR {event.price.toFixed(2)}</p>
+            <p>Price: R{event.price.toFixed(2)}</p>
+            <p>Available Tickets: {event.available_tickets} left</p>
             <Link to={`/buy-ticket/${event.eventid}`}>
               <button className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition">
                 Buy Ticket
