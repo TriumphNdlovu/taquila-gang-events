@@ -35,8 +35,8 @@ const LandingPage: React.FC = () => {
         <h1>Welcome to TQG Ticket Shop</h1>
       </header>
 
-      <main>
-        <p className='text-2xl font-bold text-white'>Events</p>
+      <main className='bg-black'>
+        <p className='text-2xl font-bold text-white h-full'>Events</p>
         {event ? (
           <div className="border rounded-lg p-6 shadow-md bg-white">
             {/* Event Poster */}

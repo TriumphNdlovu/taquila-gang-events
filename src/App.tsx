@@ -15,7 +15,7 @@ const App: React.FC = () => {
   return (
     <Router>
         <Navbar />
-      <div className='bg-black h-screen'>
+      <div className='bg-black h-full'>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/buy-ticket/:eventId" element={<BuyTicket />} />
