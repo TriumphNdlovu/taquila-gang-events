@@ -30,7 +30,7 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 h-full">
+    <div className="max-w-4xl mx-auto p-6">
       <header className="text-center text-4xl font-bold my-6 text-white">
         <h1>Welcome to TQG Ticket Shop</h1>
       </header>
@@ -41,12 +41,12 @@ const LandingPage: React.FC = () => {
           <div className="border rounded-lg p-6 shadow-md bg-white">
             {/* Event Poster */}
             <img
-              src="/EventPoster.jpeg" // Adjust the path accordingly
+              src="/EventPoster.jpeg" 
               alt={`${event.title} poster`}
-              className="w-full h-auto rounded-lg mb-4" // Ensures the image is responsive
+              className="w-full h-auto rounded-lg mb-4" 
             />
             <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
-            <p>Venue: {event.venue}</p> {/* Corrected the spelling from "vanue" to "venue" */}
+            <p>Venue: {event.venue}</p> 
             <p>Date: {new Date(event.date).toLocaleDateString()}</p>
             <p>Time: {event.time}</p>
             <p>Price: ZAR {event.price.toFixed(2)}</p>
