@@ -28,14 +28,28 @@ export const fetchEventById = async (eventId: string): Promise<Event | null> => 
 }
 
 export const event_ticket_decrement = async (eventId: string) => {
-  const { data, error } = await supabase
+
+  const { data: event, error: fetchError } = await supabase
     .from('events')
-    .update({ available_tickets: { 'action': 'decrement', 'value': 1 } })
+    .select('available_tickets')
+    .eq('eventid', eventId)
+    .single(); 
+
+  if (fetchError) {
+    throw new Error('Error fetching event: ' + fetchError.message);
+  }
+
+  const newAvailableTickets = event.available_tickets - 1;
+
+
+  const { data, error: updateError } = await supabase
+    .from('events')
+    .update({ available_tickets: newAvailableTickets })
     .eq('eventid', eventId);
 
-  if (error) {
-    throw new Error('Error decrementing ticket: ' + error.message);
+  if (updateError) {
+    throw new Error('Error decrementing ticket: ' + updateError.message);
   }
 
   return data;
-}
+};
