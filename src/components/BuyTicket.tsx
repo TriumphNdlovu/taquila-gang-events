@@ -97,7 +97,7 @@ const BuyTicket: React.FC = () => {
 
         
             {!isPaymentInitiated ? (
-              <button 
+              <button
                 onClick={handleBuyTicket} 
                 className="border border-black text-black px-4 py-2 w-full rounded-md hover:bg-black hover:text-white transition"
               >
@@ -149,7 +149,7 @@ const BuyTicket: React.FC = () => {
         value={buyerPhoneNumber}
         onChange={(e) => setBuyerPhoneNumber(e.target.value)}
         required
-        placeholder='e.g. 0712345678'
+        placeholder='e.g. 0712445678'
         className="w-full p-2 border border-gray-400 rounded-md text-black"
       />
     </div>
