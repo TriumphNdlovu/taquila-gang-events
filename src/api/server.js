@@ -6,16 +6,11 @@ require('dotenv').config();
 
 const app = express();
 
-
+// Use CORS middleware
 app.use(cors({
-    origin: 'https://tequila-gang-events.vercel.app/sendTicket',
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization',
-         'Origin', 'Access-Control-Allow-Origin', 
-         'Access-Control-Allow-Headers', 'Access-Control-Allow-Methods', 'Access-Control-Allow-Credentials'],
-
-    credentials: true 
+    
 }));
+
 app.use(bodyParser.json());
 
 
@@ -41,14 +36,12 @@ transporter.verify(function (error, success) {
 });
 
 
-app.post('/sendTicket', async (req, res) => {
+app.post('/server', async (req, res) => {
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    const { buyer_email, pdf_ticket } = req.body; 
+    const { buyer_email } = req.body; 
+    // const { buyer_email, pdf_ticket } = req.body; 
 
-    const pdfBuffer = Buffer.from(pdf_ticket, 'base64'); 
+    // const pdfBuffer = Buffer.from(pdf_ticket, 'base64'); 
 
     
     const mailOptions = {
@@ -56,13 +49,13 @@ app.post('/sendTicket', async (req, res) => {
         to: buyer_email, // Recipient's email
         subject: `Your Ticket for Tropical Summer Slash`,
         text: `Hi ;), \n\nThank you for your purchase! Please find your ticket for Tropical Summer Slash attached.\n\nBest regards,\nTQG Team`,
-        attachments: [
-            {
-                filename: `Tropical_Summer_Slash_Ticket.pdf`,
-                content: pdfBuffer,
-                contentType: 'application/pdf',
-            },
-        ],
+        // attachments: [
+        //     {
+        //         filename: `Tropical_Summer_Slash_Ticket.pdf`,
+        //         content: pdfBuffer,
+        //         contentType: 'application/pdf',
+        //     },
+        // ],
     };
 
     try {
