@@ -18,7 +18,7 @@ export const generateTicketPDF = async (ticketId: string) => {
     });
 
 
-        const posterImageBytes = await fetch("../../EventPoster.jpeg").then((res) => res.arrayBuffer());
+        const posterImageBytes = await fetch("../../ticketImage.jpeg").then((res) => res.arrayBuffer());
         const posterImage = await pdfDoc.embedJpg(posterImageBytes);
 
       

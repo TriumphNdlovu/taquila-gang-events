@@ -26,7 +26,7 @@ export const addTicket = async (ticketId: string) => {
 
         console.log('Ticket added successfully');
         //Todo: Take of the hard coded event id and take care of what happens when tickets reach zero
-        await event_ticket_decrement('f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd');
+        const left = await event_ticket_decrement('f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd');
         return ticketId ;
 
     } catch (error) {
