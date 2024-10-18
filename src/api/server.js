@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     if (req.method === 'POST') {
         res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust to specific origin if needed
 
-        const { buyer_email } = req.body;
+        const { buyer_email , pdf } = req.body;
 
         // Configure the Nodemailer transporter
         const transporter = nodemailer.createTransport({
