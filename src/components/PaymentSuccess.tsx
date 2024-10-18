@@ -8,7 +8,7 @@ import { sendTicketEmail } from '../emails/nodemailer';
 const PaymentSuccess: React.FC = () => {
     const [ticketId, setTicketId] = useState<string | null>(null);
     const location = useLocation();
-    const sendMailCalled = useRef(false); 
+    const sendMailCalled = useRef(false); // Track if the function has been called
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -20,6 +20,7 @@ const PaymentSuccess: React.FC = () => {
     }, [location]);
 
     useEffect(() => {
+        // Only call sendMailandDownload when ticketId is set and function hasn't been called
         if (ticketId && !sendMailCalled.current) {
             sendMailandDownload();
         }
@@ -29,14 +30,11 @@ const PaymentSuccess: React.FC = () => {
         sendMailCalled.current = true;
         try {
             await downloadTicket();
-            window.location.href = '/thanks'
             await sendMailAndAddTicket();
-            //redirect to home page
-            ;
             console.log('Email sent and ticket added');
         } catch (error) {
             console.error('Error in sendMailandDownload:', error);
-            sendMailCalled.current = false; 
+            sendMailCalled.current = false; // Reset to allow retry if needed
         }
     };
 
@@ -48,7 +46,7 @@ const PaymentSuccess: React.FC = () => {
 
         try {
             const pdfArray = await generateTicketPDF(ticketId);
-            const pdf = pdfArray[1]; 
+            const pdf = pdfArray[1]; // Assume this is the PDF for download.
             const blob = new Blob([pdf], { type: 'application/pdf' });
             saveAs(blob, 'Tropical_Summer_Slash_Ticket.pdf');
         } catch (error) {
@@ -68,7 +66,7 @@ const PaymentSuccess: React.FC = () => {
 
             const ticketID = await addTicket(ticketId);
             const pdfArray = await generateTicketPDF(ticketId);
-            const pdf = pdfArray[0]; 
+            const pdf = pdfArray[0]; // Assume this is the PDF for the email attachment.
             const response = await sendTicketEmail(buyerEmail, pdf);
             console.log('Email response:', response);
         } catch (error) {
@@ -78,7 +76,17 @@ const PaymentSuccess: React.FC = () => {
 
     return (
         <div className="bg-gray-100 flex justify-center items-center h-screen">
-            Redirecting...
+            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                <h1 className="text-2xl font-bold mb-4">Payment Successful!</h1>
+                <p className="mb-4 text-sm">Thank you for your purchase. The ticket has been sent to your email.</p>
+                <p className='mb-4 text-sm'>The download should start automatically. If not, click below:</p>
+                <a 
+                    className='mb-4 hover:cursor-pointer border border-black hover:border-blue-600 text-xs'
+                    onClick={downloadTicket}
+                >
+                    Click here for Manual Download
+                </a>
+            </div>
         </div>
     );
 };

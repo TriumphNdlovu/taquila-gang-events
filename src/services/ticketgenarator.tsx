@@ -6,9 +6,9 @@ export const generateTicketPDF = async (ticketId: string) => {
     const event = await fetchEventById(localStorage.getItem('eventid')!);
 
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 200]); 
+    const page = pdfDoc.addPage([600, 200]); // Increased page height to accommodate the poster
 
-    
+    // Set background color
     page.drawRectangle({
         x: 0,
         y: 0,
@@ -19,24 +19,25 @@ export const generateTicketPDF = async (ticketId: string) => {
 
 
         const posterImageBytes = await fetch("../../EventPoster.jpeg").then((res) => res.arrayBuffer());
-        const posterImage = await pdfDoc.embedJpg(posterImageBytes);
+        const posterImage = await pdfDoc.embedJpg(posterImageBytes); // or use embedJpg if the image is a JPEG
 
-      
+        // Draw the poster image on the PDF (resize and position as needed)
         const posterDims = posterImage.scale(0.12);
         page.drawImage(posterImage, {
             x: 30,
-            y: 30, 
+            y: 30, // Adjust the y-position as needed
             width: posterDims.width,
             height: posterDims.height,
         });
     
 
+    // Add a title with improved styling
     page.drawText(event!.title, {
         x: 190,
         y: 150,
         size: 16,
         color: rgb(0, 0, 0),
-        font: await pdfDoc.embedFont(StandardFonts.TimesRomanBold), 
+        font: await pdfDoc.embedFont(StandardFonts.TimesRomanBold), // Use a bold font for the title
     });
 
     page.drawText(`Venue: ${event!.venue}`, { x: 190, y: 125, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
@@ -44,12 +45,12 @@ export const generateTicketPDF = async (ticketId: string) => {
     page.drawText(`Time: ${event!.time}`, { x: 190, y: 95, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
     page.drawText(`Price: R${event!.price}`, { x: 190, y: 80, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
 
-   
+    // Add a decorative border
     page.drawRectangle({
         x: 20,
         y: 10,
         width: 395,
-        height: 180 , 
+        height: 180 , // Adjusted height to fit around the poster
         borderWidth: 1,
         borderColor: rgb(0.0, 0.0, 0.0),
     });
@@ -75,7 +76,7 @@ export const generateTicketPDF = async (ticketId: string) => {
         height: pngDims.height,
     });
 
-
+    // Add instructions under the QR code
     page.drawText('Scan at the entrance', {
         x: page.getWidth() - 160,
         y: 60,
@@ -87,6 +88,7 @@ export const generateTicketPDF = async (ticketId: string) => {
     // Convert the PDF to bytes and trigger download
     const pdf_for_saves = await pdfDoc.save();
     const pdf_for_Mail = await pdfDoc.saveAsBase64();
+    const blob = new Blob([pdf_for_saves], { type: 'application/pdf' });
 
     return [pdf_for_Mail, pdf_for_saves];
 };

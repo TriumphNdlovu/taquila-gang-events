@@ -4,7 +4,7 @@ import  supabase  from "../supabaseClient";
 export const addTicket = async (ticketId: string) => {
     try {
 
-     
+        // Insert the new ticket into the 'tickets' table in Supabase
         const { error: insertError } = await supabase.from('tickets').insert([
             {
                 eventid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', // will unhard code this later on
@@ -30,93 +30,6 @@ export const addTicket = async (ticketId: string) => {
         console.error('An unexpected error occurred:', error);
     }
 };
-
-export const redeemticket = async (ticketId : string) =>
-{
-    try {
-        const { error: updateError } = await supabase.from('tickets').update({
-            is_redeemed: true,
-        }).eq('ticketid', ticketId);
-
-        if (updateError) {
-            console.error('Error updating ticket:', updateError.message);
-            return;
-        }
-
-        console.log('Ticket redeemed successfully');
-    } catch (error) {
-        console.error('An unexpected error occurred:', error);
-    }
-}
-
-export const is_redeemed = async (ticketId : string) =>
-{
-    try {
-        const { data, error } = await supabase
-            .from('tickets')
-            .select('is_redeemed')
-            .eq('ticketid', ticketId)
-            .single();
-
-        if (error) {
-            console.error('Error fetching ticket:', error.message);
-            return false;
-        }
-
-        if (!data) {
-            console.error('Ticket not found');
-            return false;
-        }
-
-        return data.is_redeemed;
-    } catch (error) {
-        console.error('An unexpected error occurred:', error);
-        return false;
-    }
-}
-
-export const validateTicket = async (ticketId: string): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase
-      .from('tickets')
-      .select('*')
-      .eq('ticketid', ticketId)
-      .single(); // Fetch a single record based on ticket ID
-
-    if (error) {
-      console.error('Error fetching ticket:', error.message);
-      return false; // Return false if an error occurred during the fetch
-    }
-
-    if (!data) {
-      console.error('Ticket not found');
-      return false; // Return false if no ticket is found
-    }
-
-    return true; // If data is found, the ticket is valid
-  } catch (error) {
-    console.error('An unexpected error occurred:', error);
-    return false; // Return false in case of any unexpected errors
-  }
-};
-
-export const fetchAllTickets = async () => {
-    try {
-        const { data, error } = await supabase
-            .from('tickets')
-            .select('*');
-
-        if (error) {
-            console.error('Error fetching tickets:', error.message);
-            return [];
-        }
-
-        return data;
-    } catch (error) {
-        console.error('An unexpected error occurred:', error);
-        return [];
-    }
-}
 
 export const genarateTicketId = async () => {
     try {
