@@ -163,7 +163,6 @@ const BuyTicket: React.FC = () => {
     </div>
   </div>
 </form>
-
             )}
           </div>
         ) : (
