@@ -97,7 +97,7 @@ const BuyTicket: React.FC = () => {
               id="quantity"
               value={quantity}
               onChange={handleQuantityChange}
-              className="w-full p-2 border border-gray-400 rounded-md text-black"
+              className="w-full p-2  border border-gray-400 rounded-md text-black"
             >
               {[...Array(10).keys()].map((_, i) => (
                 <option key={i + 1} value={i + 1}>{i + 1}</option>
