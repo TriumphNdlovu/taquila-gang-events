@@ -9,7 +9,7 @@ export const addTicket = async (ticketId: string) => {
         const { error: insertError } = await supabase.from('tickets').insert([
             {
                 eventid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', 
-                ticketid: localStorage.getItem('ticketId') ,
+                ticketid: ticketId,
                 orderid: 'f1cf3ba3-7d76-48bd-bd46-5ea8d3321bdd', 
                 buyer_email: localStorage.getItem('buyerEmail'),
                 buyer_name: localStorage.getItem('buyerName'),

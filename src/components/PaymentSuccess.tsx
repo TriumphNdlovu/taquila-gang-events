@@ -29,10 +29,10 @@ const PaymentSuccess: React.FC = () => {
         sendMailCalled.current = true;
         try {
             await downloadTicket();
+            await addingTicket();
+            await sending_mail();
             window.location.href = '/thanks'
-            await sendMailAndAddTicket();
-            //redirect to home page
-            ;
+
             console.log('Email sent and ticket added');
         } catch (error) {
             console.error('Error in sendMailandDownload:', error);
@@ -56,25 +56,35 @@ const PaymentSuccess: React.FC = () => {
         }
     };
 
-    const sendMailAndAddTicket = async () => {
+    const addingTicket = async () => {
         try {
             const ticketId = localStorage.getItem('ticketId');
-            const buyerEmail = localStorage.getItem('buyerEmail');
 
-            if (!ticketId || !buyerEmail) {
+            if (!ticketId) {
                 console.error('Ticket ID or Buyer Email is missing');
                 return;
             }
-
             const ticketID = await addTicket(ticketId);
-            const pdfArray = await generateTicketPDF(ticketId);
-            const pdf = pdfArray[0]; 
-            const response = await sendTicketEmail(buyerEmail, pdf);
-            console.log('Email response:', response);
+            
         } catch (error) {
             console.error('Error sending email or adding ticket:', error);
         }
     };
+
+    const sending_mail = async () => {
+
+        const ticketId = localStorage.getItem('ticketId');
+        const buyerEmail = localStorage.getItem('buyerEmail');
+
+        if(!ticketId || !buyerEmail) {
+            console.error('Ticket ID not found');
+            return;
+        }
+            const pdfArray = await generateTicketPDF(ticketId);
+            const pdf = pdfArray[0]; 
+            const response = await sendTicketEmail(buyerEmail, pdf);
+            console.log('Email response:', response);
+    }
 
     return (
         <div className="bg-gray-100 flex justify-center items-center h-screen">
