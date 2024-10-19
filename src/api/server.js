@@ -30,11 +30,20 @@ module.exports = async (req, res) => {
         try {
             await transporter.verify();
 
+            const pdfBuffer = Buffer.from(pdf, 'base64');
+
             const mailOptions = {
                 from: process.env.REACT_APP_EMAIL_USER,
                 to: buyer_email,
                 subject: 'Your Ticket for Tropical Summer Slash',
                 text: 'Hi ;),\n\nThank you for your purchase! Please find your ticket for Tropical Summer Slash attached.\n\nBest regards,\nTQG Team',
+                attachments: [
+                    {
+                        filename: 'Tropical_Summer_slash_Ticket.pdf',
+                        content: pdfBuffer,
+                        encoding: 'base64',
+                    },
+                ],
             };
 
             await transporter.sendMail(mailOptions);
