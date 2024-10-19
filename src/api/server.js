@@ -1,22 +1,21 @@
 const nodemailer = require('nodemailer');
 
 module.exports = async (req, res) => {
-    // Handle CORS preflight request
+  
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        res.status(200).end(); // Respond OK to OPTIONS requests
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.status(200).end(); 
         return;
     }
 
-    // Check if the request method is POST
+ 
     if (req.method === 'POST') {
-        res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust to specific origin if needed
+        res.setHeader('Access-Control-Allow-Origin', 'https://tequila-gang-events.vercel.app');
 
         const { buyer_email , pdf } = req.body;
-
-        // Configure the Nodemailer transporter
         const transporter = nodemailer.createTransport({
             host: 'da16.domains.co.za', 
             port: 587, 
@@ -55,6 +54,6 @@ module.exports = async (req, res) => {
     } else {
         // Respond with 405 if not a POST request
         res.setHeader('Allow', ['POST']);
-        res.status(405).json({ message: 'Method Not Allowed' });
+        res.status(405).json({ message: 'Method Not Alloweddd' });
     }
 };
