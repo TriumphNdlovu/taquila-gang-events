@@ -1,16 +1,20 @@
 const nodemailer = require('nodemailer');
 
 module.exports = async (req:any, res:any) => {
-    if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        res.status(200).end();
-        return;
-    }
+    // if (req.method === 'OPTIONS') {
+    //     res.setHeader('Access-Control-Allow-Origin', '*');
+    //     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    //     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    //     res.setHeader('Access-Control-Max-Age', '86400');
+    //     res.status(200).end();
+    //     return;
+    // }
 
     if (req.method === 'POST') {
         res.setHeader('Access-Control-Allow-Origin', 'https://tequila-gang-events.vercel.app');
+        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        
 
         const { buyer_email, pdf_ticket } = req.body;
 
