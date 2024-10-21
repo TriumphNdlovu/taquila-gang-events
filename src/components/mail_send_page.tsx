@@ -10,8 +10,8 @@ export const MailSendPage: React.FC = () => {
         try {
             const pdf_Array = await generateTicketPDF("917f9c1e-4a46-4253-84e1-05dc9cd8cc7d"); // Just for testing
             const pdf_ticket = pdf_Array[0];
-            await sendTicketEmail(email, pdf_ticket);
-            alert('Email sent successfully!');
+            const hey = await sendTicketEmail(email, pdf_ticket);
+            alert('Email sent successfully!' + hey);
         } catch (error) {
             console.error('Error sending email:', error);
             alert('Failed to send the email.');
