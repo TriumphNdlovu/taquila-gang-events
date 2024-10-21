@@ -19,6 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/api/sendTicket', async (req, res)  => {
     const { buyer_email, pdf_ticket } = req.body;
 
+    console.log('This means i got in buyer_email:', buyer_email);
+
         // Set up the nodemailer transporter
         const transporter = nodemailer.createTransport({
             host: 'da16.domains.co.za',
@@ -31,7 +33,9 @@ app.post('/api/sendTicket', async (req, res)  => {
         });
 
         try {
+            console.log('This means i got in try');
             await transporter.verify();
+            console.log('This means i got in try 2');
 
             // Prepare the PDF attachment
             const pdfBuffer = Buffer.from(pdf_ticket, 'base64');
@@ -48,8 +52,10 @@ app.post('/api/sendTicket', async (req, res)  => {
                 //     },
                 // ],
             };
-
+            console.log('This means i got in try 3');
             await transporter.sendMail(mailOptions);
+            console.log('This means i got in try 4');
+            
             res.status(200).send('Email sent successfully');
         } catch (error) {
             console.error('Error sending email:', error);
