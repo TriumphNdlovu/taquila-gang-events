@@ -53,3 +53,7 @@ module.exports = async (req:any, res:any) => {
         res.status(405).json({ message: 'Method Not Allowed' });
     }
 };
+
+
+export {}; // This makes it a module
+
