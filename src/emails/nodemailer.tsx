@@ -9,7 +9,8 @@
 // };
 
 export const sendTicketEmail = async (email: string, pdf_ticket_base64: any) => {
-const response = await fetch('https://us-central1-tequila-gang-tickets.cloudfunctions.net/sendTicket', {
+const response = await fetch('https://sendticket-xgwr73lm2a-uc.a.run.app', {
+    
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
