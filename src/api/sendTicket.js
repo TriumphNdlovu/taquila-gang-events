@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
+    
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -53,6 +54,6 @@ module.exports = async (req, res) => {
     } else {
         // Respond with 405 if not a POST request
         res.setHeader('Allow', ['POST']);
-        res.status(405).json({ message: 'Method Not Allowed' });
+        return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 };
