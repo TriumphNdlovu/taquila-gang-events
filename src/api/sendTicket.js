@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     }
 
     // Handle POST requests
-    if (req.method === 'POST') {
+    // if (req.method === 'POST') {
         const { buyer_email, pdf_ticket } = req.body;
 
         // Set up the nodemailer transporter
@@ -51,9 +51,9 @@ export default async function handler(req, res) {
             console.error('Error sending email:', error);
             res.status(500).send('Error sending email');
         }
-    } else {
-        // Respond with 405 if not a POST request
-        res.setHeader('Allow', ['POST']);
-        return res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
+    // } else {
+    //     // Respond with 405 if not a POST request
+    //     res.setHeader('Allow', ['POST']);
+    //     return res.status(405).end(`Method ${req.method} Not Allowed`);
+    // }
 };
