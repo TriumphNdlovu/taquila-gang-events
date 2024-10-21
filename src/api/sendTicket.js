@@ -1,23 +1,20 @@
 const nodemailer = require('nodemailer');
 
-module.exports = async (req:any, res:any) => {
-    // if (req.method === 'OPTIONS') {
-    //     res.setHeader('Access-Control-Allow-Origin', '*');
-    //     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    //     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    //     res.setHeader('Access-Control-Max-Age', '86400');
-    //     res.status(200).end();
-    //     return;
-    // }
-
-    if (req.method === 'POST') {
-        res.setHeader('Access-Control-Allow-Origin', 'https://tequila-gang-events.vercel.app');
+module.exports = async (req, res) => {
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        
+        res.status(200).end();
+        return;
+    }
 
+    // Handle POST requests
+    if (req.method === 'POST') {
         const { buyer_email, pdf_ticket } = req.body;
 
+        // Set up the nodemailer transporter
         const transporter = nodemailer.createTransport({
             host: 'da16.domains.co.za',
             port: 587,
@@ -30,8 +27,9 @@ module.exports = async (req:any, res:any) => {
 
         try {
             await transporter.verify();
-            const pdfBuffer = Buffer.from(pdf_ticket, 'base64');
 
+            // Prepare the PDF attachment
+            const pdfBuffer = Buffer.from(pdf_ticket, 'base64');
             const mailOptions = {
                 from: process.env.REACT_APP_EMAIL_USER,
                 to: buyer_email,
@@ -39,7 +37,7 @@ module.exports = async (req:any, res:any) => {
                 text: 'Hi ;),\n\nThank you for your purchase! Please find your ticket for Tropical Summer Slash attached.\n\nBest regards,\nTQG Team',
                 attachments: [
                     {
-                        filename: 'Tropical_Summer_slash_Ticket.pdf',
+                        filename: 'Tropical_Summer_Slash_Ticket.pdf',
                         content: pdfBuffer,
                         encoding: 'base64',
                     },
@@ -53,11 +51,8 @@ module.exports = async (req:any, res:any) => {
             res.status(500).send('Error sending email');
         }
     } else {
-        res.setHeader('Allow', ['POST', 'OPTIONS']);
+        // Respond with 405 if not a POST request
+        res.setHeader('Allow', ['POST']);
         res.status(405).json({ message: 'Method Not Allowed' });
     }
 };
-
-
-export {}; // This makes it a module
-

@@ -1,9 +1,6 @@
 {
-  "version": 2,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index"
-    }
-  ]
+    "version": 2,
+    "routes": [
+        { "src": "/api/sendTicket", "dest": "/api/sendTicket.js" }
+    ]
 }
