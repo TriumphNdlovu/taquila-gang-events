@@ -28,7 +28,7 @@ const App: React.FC = () => {
           <Route path="/validticket" element={<TicketValidPage />} />
           <Route path="/allbreads" element={<PurchasedTickets/>} />
           <Route path="/thanks" element={<Thanks/>} />
-          <Route path="/sendmail" element={<MailSendPage />} />
+          {/* <Route path="/sendmail" element={<MailSendPage />} /> */}
           <Route path="*" element={<h1 className='text-white min-h-screen flex justify-center items-center'>
             <div>
               <p> Page Not Found :( </p>

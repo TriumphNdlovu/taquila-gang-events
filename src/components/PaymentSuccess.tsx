@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { generateTicketPDF } from '../services/ticketgenarator';
 import { addTicket } from '../services/ticketService';
-import { redirect, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 import { sendTicketEmail } from '../emails/nodemailer';
 
@@ -9,6 +9,7 @@ const PaymentSuccess: React.FC = () => {
     const [ticketId, setTicketId] = useState<string | null>(null);
     const location = useLocation();
     const sendMailCalled = useRef(false); 
+    const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -32,8 +33,9 @@ const PaymentSuccess: React.FC = () => {
                 addingTicket().then(() => {
                     downloadTicket().then(() => {
                         console.log('Email sent and ticket added');
-                        // redirect to the sendmail page
-                        redirect('/sendmail');
+                        setTimeout(() => {
+                            navigate('/thanks');
+                        }, 2000);
                     })
                 })
             })
@@ -61,8 +63,6 @@ const PaymentSuccess: React.FC = () => {
 
     const addingTicket = async () => {
         try {
-            // const ticketIda = localStorage.getItem('ticketId');
-
             if (!ticketId) {
                 console.error('Ticket ID or Buyer Email is missing');
                 return;

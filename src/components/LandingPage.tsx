@@ -9,6 +9,13 @@ const LandingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // reset localhost storage
+    localStorage.removeItem('buyerEmail');
+    localStorage.removeItem('ticketId');
+    localStorage.removeItem('quantity');
+    localStorage.removeItem('buyerName');
+    localStorage.removeItem('buyerPhoneNumber');
+    
     const getEvent = async () => {
       try {
         const eventsData = await fetchEventServices();
