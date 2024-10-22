@@ -62,7 +62,7 @@ const PaymentSuccess: React.FC = () => {
 
     const addingTicket = async () => {
         try {
-            const ticketId = localStorage.getItem('ticketId');
+            const ticketIda = localStorage.getItem('ticketId');
 
             if (!ticketId) {
                 console.error('Ticket ID or Buyer Email is missing');
@@ -77,7 +77,7 @@ const PaymentSuccess: React.FC = () => {
 
     const sending_mail = async () => {
 
-        const ticketId = localStorage.getItem('ticketId');
+        // const ticketId = localStorage.getItem('ticketId');
         const buyerEmail = localStorage.getItem('buyerEmail');
 
         if(!ticketId || !buyerEmail) {
