@@ -7,28 +7,32 @@ import { sendTicketEmail } from '../emails/nodemailer';
 
 const PaymentSuccess: React.FC = () => {
     const [ticketId, setTicketId] = useState<string | null>(null);
+    const [bEmail, setBEmail] = useState<string | null>(null);
     const location = useLocation();
     const sendMailCalled = useRef(false); 
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const ticketIdParam = params.get('ticketId');
-        if (ticketIdParam) {
+        const buyerEmail = params.get('buyerEmail');
+
+        if (ticketIdParam && buyerEmail) {
             localStorage.setItem('ticketId', ticketIdParam);
+            localStorage.setItem('buyerEmail', buyerEmail!);
+            setBEmail(buyerEmail);
             setTicketId(ticketIdParam);
+        }
+
+        if (ticketIdParam && !sendMailCalled.current) {
+            sendMailandDownload();
         }
     }, [location]);
 
-    useEffect(() => {
-        if (ticketId && !sendMailCalled.current) {
-            sendMailandDownload();
-        }
-    }, [ticketId]);
 
     const sendMailandDownload = async () => {
         sendMailCalled.current = true;
         try {
-            sending_mail().then(() => {
+            const wait = await sending_mail().then(() => {
                 addingTicket().then(() => {
                     downloadTicket().then(() => {
                         console.log('Email sent and ticket added');
@@ -37,7 +41,7 @@ const PaymentSuccess: React.FC = () => {
                 })
             })
             
-            console.log('Email sent and ticket added');
+            console.log('Email sent and ticket added' + wait);
         } catch (error) {
             console.error('Error in sendMailandDownload:', error);
             sendMailCalled.current = false; 
@@ -62,13 +66,14 @@ const PaymentSuccess: React.FC = () => {
 
     const addingTicket = async () => {
         try {
-            const ticketIda = localStorage.getItem('ticketId');
+            // const ticketIda = localStorage.getItem('ticketId');
 
             if (!ticketId) {
                 console.error('Ticket ID or Buyer Email is missing');
                 return;
             }
             const ticketID = await addTicket(ticketId);
+            console.log('Ticket added:', ticketID);
             
         } catch (error) {
             console.error('Error sending email or adding ticket:', error);
@@ -78,15 +83,15 @@ const PaymentSuccess: React.FC = () => {
     const sending_mail = async () => {
 
         // const ticketId = localStorage.getItem('ticketId');
-        const buyerEmail = localStorage.getItem('buyerEmail');
+        // const buyerEmail = localStorage.getItem('buyerEmail');
 
-        if(!ticketId || !buyerEmail) {
+        if(!ticketId || !bEmail) {
             console.error('Ticket ID not found');
             return;
         }
             const pdfArray = await generateTicketPDF(ticketId);
             const pdf = pdfArray[0]; 
-            const response = await sendTicketEmail(buyerEmail, pdf);
+            const response = await sendTicketEmail(bEmail, pdf);
             console.log('Email response:', response);
     }
 
