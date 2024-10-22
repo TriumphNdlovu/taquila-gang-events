@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { generateTicketPDF } from '../services/ticketgenarator';
 import { sendTicketEmail } from '../emails/nodemailer';
+import { addTicket } from '../services/ticketService';
 
 export const MailSendPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export const MailSendPage: React.FC = () => {
             const pdf_Array = await generateTicketPDF("917f9c1e-4a46-4253-84e1-05dc9cd8cc7d"); // Just for testing
             const pdf_ticket = pdf_Array[0];
             const hey = await sendTicketEmail(email, pdf_ticket);
+            const tso = await addTicket("917f9c1e-4a46-4253-84e1-05dc9c18cc7d"); // Just for testing
             alert('Email sent successfully!' + hey);
         } catch (error) {
             console.error('Error sending email:', error);

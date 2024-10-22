@@ -28,9 +28,9 @@ const PaymentSuccess: React.FC = () => {
     const sendMailandDownload = async () => {
         sendMailCalled.current = true;
         try {
-            await downloadTicket();
-            await addingTicket();
-            await sending_mail();
+            const first = await downloadTicket();
+            const second = await addingTicket();
+            const third = await sending_mail();
             window.location.href = '/thanks'
 
             console.log('Email sent and ticket added');

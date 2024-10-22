@@ -10,7 +10,7 @@ import Thanks from './components/Thanks';
 import QRCodeScanner from './components/QRCodeScanner';
 import TicketValidPage from './components/TicketValidPage';
 import PurchasedTickets from './components/PurchasedTickets';
-import Mail from 'nodemailer/lib/mailer';
+// import Mail from 'nodemailer/lib/mailer';
 import MailSendPage from './components/mail_send_page';
 
 const App: React.FC = () => {
