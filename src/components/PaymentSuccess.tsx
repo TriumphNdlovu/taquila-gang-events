@@ -1,29 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { generateTicketPDF } from '../services/ticketgenarator';
 import { addTicket } from '../services/ticketService';
-import { useLocation } from 'react-router-dom';
+import { redirect, useLocation } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 import { sendTicketEmail } from '../emails/nodemailer';
 
 const PaymentSuccess: React.FC = () => {
     const [ticketId, setTicketId] = useState<string | null>(null);
-    const [bEmail, setBEmail] = useState<string | null>(null);
     const location = useLocation();
     const sendMailCalled = useRef(false); 
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const ticketIdParam = params.get('ticketId');
-        const buyerEmail = params.get('buyerEmail');
 
-        if (ticketIdParam && buyerEmail) {
+        if (ticketIdParam ) {
             localStorage.setItem('ticketId', ticketIdParam);
-            localStorage.setItem('buyerEmail', buyerEmail!);
-            setBEmail(buyerEmail);
             setTicketId(ticketIdParam);
         }
 
-        if (ticketIdParam && buyerEmail && !sendMailCalled.current) {
+        if (ticketIdParam && !sendMailCalled.current) {
             sendMailandDownload();
         }
     }, [location]);
@@ -36,7 +32,8 @@ const PaymentSuccess: React.FC = () => {
                 addingTicket().then(() => {
                     downloadTicket().then(() => {
                         console.log('Email sent and ticket added');
-                        window.location.href = '/thanks'
+                        // redirect to the sendmail page
+                        redirect('/sendmail');
                     })
                 })
             })
@@ -80,16 +77,16 @@ const PaymentSuccess: React.FC = () => {
 
     const sending_mail = async () => {
 
-        // const ticketId = localStorage.getItem('ticketId');
-        // const buyerEmail = localStorage.getItem('buyerEmail');
+        const ticketId = localStorage.getItem('ticketId');
+        const buyerEmail = localStorage.getItem('buyerEmail');
 
-        // if(!ticketId || !bEmail) {
-        //     console.error('Ticket ID not found');
-        //     return;
-        // }
+        if(!ticketId) {
+            console.error('Ticket ID not found');
+            return;
+        }
             const pdfArray = await generateTicketPDF(ticketId!);
             const pdf = pdfArray[0]; 
-            const response = await sendTicketEmail(bEmail!, pdf);
+            const response = await sendTicketEmail(buyerEmail!, pdf);
             console.log('Email response:', response);
     }
 
