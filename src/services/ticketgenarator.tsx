@@ -42,8 +42,8 @@ export const generateTicketPDF = async (ticketId: string) => {
     page.drawText(`Venue: ${event!.venue}`, { x: 190, y: 125, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
     page.drawText(`Date: ${new Date(event!.date).toLocaleDateString()}`, { x: 190, y: 110, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
     page.drawText(`Time: ${event!.time}`, { x: 190, y: 95, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
-    page.drawText(`Price: R${event!.price}`, { x: 190, y: 80, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
-    page.drawText(`Phase_1_Ticket #: ${500 - event!.available_tickets}`, { x: 190, y: 65, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
+    // page.drawText(`Price: R${event!.price}`, { x: 190, y: 80, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
+    page.drawText(`Phase_1_Ticket #: ${500 - event!.available_tickets}`, { x: 190, y: 80, size: 10, font: await pdfDoc.embedFont(StandardFonts.Courier) });
    
     page.drawRectangle({
         x: 20,

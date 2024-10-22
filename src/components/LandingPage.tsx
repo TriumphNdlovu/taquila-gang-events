@@ -15,7 +15,7 @@ const LandingPage: React.FC = () => {
     localStorage.removeItem('quantity');
     localStorage.removeItem('buyerName');
     localStorage.removeItem('buyerPhoneNumber');
-    
+
     const getEvent = async () => {
       try {
         const eventsData = await fetchEventServices();
@@ -55,7 +55,7 @@ const LandingPage: React.FC = () => {
             <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
             <p>Venue: {event.venue}</p> 
             <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-            <p>Time: {event.time}</p>
+            {/* <p>Time: {event.time}</p>*/}
             <p>Price: R{event.price.toFixed(2)}</p>
             <p>Available Tickets: {event.available_tickets} left</p>
             <Link to={`/buy-ticket/${event.eventid}`}>

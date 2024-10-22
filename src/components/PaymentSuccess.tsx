@@ -57,7 +57,7 @@ const PaymentSuccess: React.FC = () => {
             const pdfArray = await generateTicketPDF(ticketId);
             const pdf = pdfArray[1]; 
             const blob = new Blob([pdf], { type: 'application/pdf' });
-            saveAs(blob, 'Tropical_Summer_Slash_Ticket.pdf');
+            saveAs(blob, 'Tropical_Summer_Splash_Ticket.pdf');
         
     };
 
