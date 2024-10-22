@@ -23,7 +23,7 @@ const PaymentSuccess: React.FC = () => {
             setTicketId(ticketIdParam);
         }
 
-        if (ticketIdParam && !sendMailCalled.current) {
+        if (ticketIdParam && buyerEmail && !sendMailCalled.current) {
             sendMailandDownload();
         }
     }, [location]);
@@ -54,14 +54,12 @@ const PaymentSuccess: React.FC = () => {
             return;
         }
 
-        try {
+        
             const pdfArray = await generateTicketPDF(ticketId);
             const pdf = pdfArray[1]; 
             const blob = new Blob([pdf], { type: 'application/pdf' });
             saveAs(blob, 'Tropical_Summer_Slash_Ticket.pdf');
-        } catch (error) {
-            console.error('Error downloading the ticket:', error);
-        }
+        
     };
 
     const addingTicket = async () => {
@@ -85,13 +83,13 @@ const PaymentSuccess: React.FC = () => {
         // const ticketId = localStorage.getItem('ticketId');
         // const buyerEmail = localStorage.getItem('buyerEmail');
 
-        if(!ticketId || !bEmail) {
-            console.error('Ticket ID not found');
-            return;
-        }
-            const pdfArray = await generateTicketPDF(ticketId);
+        // if(!ticketId || !bEmail) {
+        //     console.error('Ticket ID not found');
+        //     return;
+        // }
+            const pdfArray = await generateTicketPDF(ticketId!);
             const pdf = pdfArray[0]; 
-            const response = await sendTicketEmail(bEmail, pdf);
+            const response = await sendTicketEmail(bEmail!, pdf);
             console.log('Email response:', response);
     }
 
