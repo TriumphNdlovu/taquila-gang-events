@@ -116,7 +116,7 @@ const BuyTicket: React.FC = () => {
               <input type="hidden" name="return_url" value={`https://tequila-gang-events.vercel.app/payment-success?ticketId=${ticketId}`}/>
               <input type="hidden" name="cancel_url" value={`https://tequila-gang-events.vercel.app/payment-failed`} />
               <input type="hidden" name="notify_url" value="https://www.NotifyURL.com" />
-              <input type="hidden" name="amount" value="5" required />
+              <input type="hidden" name="amount" value="300" required />
               <input type="hidden" name="item_name" maxLength={255} value={event.title} required />
               <input type="hidden" name="item_description" maxLength={255} value={'at ' + event.venue} />
               <input type="hidden" name="name_first" value={buyerName}/>
