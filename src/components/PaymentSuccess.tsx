@@ -29,15 +29,18 @@ const PaymentSuccess: React.FC = () => {
     const sendMailandDownload = async () => {
         sendMailCalled.current = true;
         try {
-            const wait = await sending_mail().then(() => {
-                addingTicket().then(() => {
-                    downloadTicket().then(() => {
-                        console.log('Email sent and ticket added');
+            const wait = await sending_mail()
+            .then(() => {
+                // const last = addingTicket()
+                // .then(() => {
+                //    const strow = downloadTicket()
+                //    .then(() => {
+                //         console.log('Email sent and ticket added');
                         setTimeout(() => {
-                            navigate('/thanks');
+                            navigate('/sendmail');
                         }, 2000);
-                    })
-                })
+                //     })
+                // })
             })
             
             console.log('Email sent and ticket added' + wait);
