@@ -28,11 +28,15 @@ const PaymentSuccess: React.FC = () => {
     const sendMailandDownload = async () => {
         sendMailCalled.current = true;
         try {
-            const first = await downloadTicket();
-            const second = await addingTicket();
-            const third = await sending_mail();
-            window.location.href = '/thanks'
-
+            sending_mail().then(() => {
+                addingTicket().then(() => {
+                    downloadTicket().then(() => {
+                        console.log('Email sent and ticket added');
+                        window.location.href = '/thanks'
+                    })
+                })
+            })
+            
             console.log('Email sent and ticket added');
         } catch (error) {
             console.error('Error in sendMailandDownload:', error);
