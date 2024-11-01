@@ -57,7 +57,7 @@ const LandingPage: React.FC = () => {
             <p>Date: {new Date(event.date).toLocaleDateString()}</p>
             {/* <p>Time: {event.time}</p>*/}
             <p>Price: R{event.price.toFixed(2)}</p>
-            <p>Available Tickets: {event.available_tickets} left</p>
+            {/* <p>Available Tickets: {event.available_tickets} left</p> */}
             <Link to={`/buy-ticket/${event.eventid}`}>
               <button className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition">
                 Buy Ticket

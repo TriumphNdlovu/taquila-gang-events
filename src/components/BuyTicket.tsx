@@ -90,7 +90,7 @@ const BuyTicket: React.FC = () => {
             <h2 className="text-2xl font-bold ">{event.title}</h2>
             <p>at {event.venue}</p>
             <p>{event.date}</p>
-            <p className='text-blue-500'>{event.available_tickets} tickets left</p>
+            {/* <p className='text-blue-500'>{event.available_tickets} tickets left</p> */}
             <p className='font-bold'>R{event.price} each</p>
 
             {/* Total Price Display */}
