@@ -22,7 +22,7 @@ Welcome to the **Tropical Summer Slash Ticketing System** repository! This proje
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/TriumphNdlovu/taquila-gang-events.git
-cd tropical-summer-slash
+cd taquila-gang-events
 ```
 ### 2. Install Dependencies
 
