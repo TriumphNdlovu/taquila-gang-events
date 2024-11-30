@@ -1,5 +1,4 @@
 // src/pages/TicketValidPage.tsx
-import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { redeemticket } from '../services/ticketService';
 import { ToastContainer, toast } from 'react-toastify';

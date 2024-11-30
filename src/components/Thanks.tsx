@@ -6,6 +6,7 @@ const Thanks: React.FC = () => {
             <h1 className="text-3xl font-bold text-center mb-4">Payment Successful! 🥳</h1>
             <p className="text-lg text-center mb-4">
                 Thank you for your purchase! Your ticket has been downloaded and sent to your email.
+                <span className="text-red-400">Please check your spam folder if you don't see it in your inbox.</span>
             </p>
             <button
                 onClick={() => window.location.replace('https://www.tequilagangsa.com')}
