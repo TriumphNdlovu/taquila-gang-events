@@ -107,7 +107,7 @@ const PurchasedTickets: React.FC = () => {
     });
 
     // Add the title
-    doc.text('Purchased Tickets', 14, 10);
+    doc.text('TQG_TICKET_SHOP_Purchased_TICKETS', 14, 10);
 
     // Generate the table
     autoTable(doc, {
