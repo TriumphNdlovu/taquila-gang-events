@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { fetchAllTickets } from '../services/ticketService';
 import { Ticket } from '../models/ticket';
-import { LoadingSpinner } from './LoadingSpinner';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const PurchasedTickets: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -12,14 +13,35 @@ const PurchasedTickets: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const ticketsPerPage = 11;
-  
+  const ticketsPerPage = 10;
 
-  // Function to handle password submission
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const data = await fetchAllTickets();
+        setTickets(data);
+        setFilteredTickets(data);
+      } catch (err) {
+        setError('Failed to fetch tickets.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTickets();
+  }, []);
+
+  useEffect(() => {
+    const filtered = tickets.filter(
+      (ticket) =>
+        ticket.buyer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.buyer_email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredTickets(filtered);
+  }, [searchQuery, tickets]);
+
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const spassword = process.env.REACT_APP_SECRET_PASS;
-    if (password === spassword) {
+    if (password === process.env.REACT_APP_SECRET_PASS) {
       setIsAuthenticated(true);
       setError(null);
     } else {
@@ -27,50 +49,96 @@ const PurchasedTickets: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const getTickets = async () => {
-      try {
-        const fetchedTickets = await fetchAllTickets();
-        const sortedTickets = fetchedTickets.sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setTickets(sortedTickets);
-        setFilteredTickets(sortedTickets);
-        setLoading(false);
-      } catch (error) {
-        setError('Failed to fetch tickets. Please try again later.');
-        setLoading(false);
-      }
-    };
-
-    getTickets();
-  }, []);
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-GB', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(date);
+  const formatDateTime = (datetime: string) => {
+    const date = new Date(datetime);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
-  useEffect(() => {
-    const query = searchQuery.toLowerCase();
-    const filtered = tickets.filter(
-      (ticket) =>
-        ticket.buyer_name.toLowerCase().includes(query) ||
-        ticket.buyer_email.toLowerCase().includes(query)
-    );
-    setFilteredTickets(filtered);
-    setCurrentPage(1);
-  }, [searchQuery, tickets]);
+  const downloadCSV = () => {
+    const headers = [
+      'FullName',
+      'Email Address',
+      'Phone Number',
+      'Date & Time',
+      'Redeemed',
+    ];
+    const rows = filteredTickets.map((ticket) => [
+      ticket.buyer_name,
+      ticket.buyer_email,
+      ticket.buyer_phone_number,
+      formatDateTime(ticket.created_at),
+      ticket.is_redeemed ? 'Yes' : 'No',
+    ]);
 
-  const startIndex = (currentPage - 1) * ticketsPerPage;
-  const paginatedTickets = filteredTickets.slice(
-    startIndex,
-    startIndex + ticketsPerPage
-  );
+    const csvContent =
+      [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tickets_${new Date().toISOString()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    const tableColumn = [
+      'FullName',
+      'Email Address',
+      'Phone Number',
+      'Date & Time',
+      'Redeemed',
+    ];
+    const tableRows: string[][] = [];
+
+    // Populate table rows
+    filteredTickets.forEach((ticket) => {
+      const ticketData = [
+        ticket.buyer_name,
+        ticket.buyer_email,
+        ticket.buyer_phone_number,
+        formatDateTime(ticket.created_at),
+        ticket.is_redeemed ? 'Yes' : 'No',
+      ];
+      tableRows.push(ticketData);
+    });
+
+    // Add the title
+    doc.text('Purchased Tickets', 14, 10);
+
+    // Generate the table
+    autoTable(doc, {
+      startY: 20,
+      head: [tableColumn],
+      body: tableRows,
+    });
+
+    // Accessing lastAutoTable after autoTable is called
+    const summaryStartY = (doc as any).lastAutoTable.finalY + 10;
+
+    // Calculate totals
+    const totalSoldTickets = tickets.length;
+    const totalRevenue = totalSoldTickets * 300; // Assuming each ticket costs 300
+    const totalRedeemedTickets = tickets.filter((ticket) => ticket.is_redeemed).length;
+
+    // Add summary section
+    doc.setFontSize(12);
+    doc.text(`Total Sold Tickets: ${totalSoldTickets}`, 14, summaryStartY);
+    doc.text(`Total Redeemed Tickets: ${totalRedeemedTickets}`, 14, summaryStartY + 6);
+    doc.text(`Total Revenue: R ${totalRevenue}`, 14, summaryStartY + 12);
+
+    // Save the PDF
+    doc.save(`tickets_${new Date().toISOString()}.pdf`);
+  };
+
   const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage);
+  const paginatedTickets = filteredTickets.slice(
+    (currentPage - 1) * ticketsPerPage,
+    currentPage * ticketsPerPage
+  );
 
   return (
     <div className="bg-black text-white p-4 sm:p-6 min-h-screen">
@@ -80,7 +148,6 @@ const PurchasedTickets: React.FC = () => {
             <h1>All Purchased Tickets</h1>
           </div>
 
-          {/* Search Input */}
           <div className="flex justify-center mb-4">
             <input
               type="text"
@@ -90,162 +157,100 @@ const PurchasedTickets: React.FC = () => {
               className="p-2 border border-gray-700 rounded bg-gray-800 text-white w-full sm:w-1/2"
             />
           </div>
-          {/* Summary Section */}
+
           <div className="flex justify-between items-center bg-gray-800 text-white rounded p-4 mb-4">
             <p className="text-lg font-medium">
               Total Sold Tickets: <span className="font-bold">{tickets.length}</span>
             </p>
+            <div className="flex gap-4">
+              <button
+                onClick={downloadCSV}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
+                Download CSV
+              </button>
+              <button
+                onClick={downloadPDF}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+              >
+                Download PDF
+              </button>
+            </div>
           </div>
 
           {loading ? (
-            <div className="flex justify-center">
-              <LoadingSpinner />
-            </div>
+            <p className="text-center">Loading...</p>
           ) : error ? (
-            <div className="text-center text-red-500">
-              {error}
-              <button
-                onClick={() => {
-                  setError(null);
-                  setLoading(true);
-                  const getTickets = async () => {
-                    try {
-                      const fetchedTickets = await fetchAllTickets();
-                      setTickets(fetchedTickets);
-                      setFilteredTickets(fetchedTickets);
-                      setLoading(false);
-                    } catch (error) {
-                      setError('Failed to fetch tickets. Please try again later.');
-                      setLoading(false);
-                    }
-                  };
-                  getTickets();
-                }}
-                className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition"
-              >
-                fetch tickets
-              </button>
-            </div>
-          ) : filteredTickets.length === 0 ? (
-            <p className="text-gray-500 text-center mt-4">No tickets available to display.</p>
+            <p className="text-center text-red-500">{error}</p>
           ) : (
-            <div className="overflow-x-auto">
-              <div className="hidden sm:block">
-                {/* Desktop Table */}
-                <table className="min-w-full bg-black border border-gray-700 text-white">
-                  <thead>
-                    <tr className="bg-gray-800">
-                      <th className="px-4 py-2 text-left">Buyer Name</th>
-                      <th className="px-4 py-2 text-left">Buyer Email</th>
-                      <th className="px-4 py-2 text-left">Phone Number</th>
-                      <th className="px-4 py-2 text-left">Date & Time</th>
-                      <th className="px-4 py-2 text-left">Redeemed</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedTickets.map((ticket) => (
-                      <tr
-                        key={ticket.ticketid}
-                        className={`border-t border-gray-700 hover:bg-gray-800`}
-                      >
-                        <td className="px-4 py-2">{ticket.buyer_name}</td>
-                        <td className="px-4 py-2">{ticket.buyer_email}</td>
-                        <td className="px-4 py-2">{ticket.buyer_phone_number}</td>
-                        <td className="px-4 py-2">{formatDateTime(ticket.created_at)}</td>
-                        <td className="px-4 py-2">
-                          {ticket.is_redeemed ? (
-                            <span className="text-green-500">Yes</span>
-                          ) : (
-                            <span className="text-red-500">No</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Table */}
-              <div className="block sm:hidden space-y-4">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-700 text-white text-left">
+                  <th className="p-2">FullName</th>
+                  <th className="p-2">Email Address</th>
+                  <th className="p-2">Phone Number</th>
+                  <th className="p-2">Date & Time</th>
+                  <th className="p-2">Redeemed</th>
+                </tr>
+              </thead>
+              <tbody>
                 {paginatedTickets.map((ticket) => (
-                  <div
-                    key={ticket.ticketid}
-                    className={`border border-gray-700 rounded-lg p-4 `}
-                  >
-                    <div className="mb-2">
-                      <strong>Buyer Name:</strong> {ticket.buyer_name}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Buyer Email:</strong> {ticket.buyer_email}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Phone Number:</strong> {ticket.buyer_phone_number}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Date & Time:</strong> {formatDateTime(ticket.created_at)}
-                    </div>
-                    <div>
-                      <strong>Redeemed:</strong>{' '}
-                      {ticket.is_redeemed ? (
-                        <span className="text-green-500">Yes</span>
-                      ) : (
-                        <span className="text-red-500">No</span>
-                      )}
-                    </div>
-                  </div>
+                  <tr key={ticket.ticketid} className="text-left">
+                    <td className="p-2">{ticket.buyer_name}</td>
+                    <td className="p-2">{ticket.buyer_email}</td>
+                    <td className="p-2">{ticket.buyer_phone_number}</td>
+                    <td className="p-2">{formatDateTime(ticket.created_at)}</td>
+                    <td className="p-2">{ticket.is_redeemed ? 'Yes' : 'No'}</td>
+                  </tr>
                 ))}
-              </div>
-            </div>
+              </tbody>
+            </table>
           )}
 
-          {/* Pagination */}
-          {filteredTickets.length > ticketsPerPage && (
-            <div className="flex justify-center mt-4 space-x-2">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <span className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-800 text-white">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <div className="flex justify-center mt-4">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`mx-1 px-3 py-1 ${
+                    currentPage === page ? 'bg-blue-600' : 'bg-gray-800'
+                  } text-white rounded`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
         </>
       ) : (
         <div className="flex justify-center items-center min-h-screen bg-black">
-  <form onSubmit={handlePasswordSubmit} className="bg-black border border-white p-8 rounded-lg shadow-lg max-w-md w-full">
-    <h2 className="text-3xl text-center text-red-500 mb-6 font-semibold">Authentification Required</h2>
-    
-    <div className="mb-6">
-      
-      <input
-        id="password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-3 border border-white rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        placeholder="Password"
-      />
-    </div>
-
-    {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-    
-    <button type="submit" className="mt-4 px-6 py-2 bg-black text-white w-full border border-white rounded hover:bg-white hover:text-black transition">
-      Submit
-    </button>
-  </form>
-</div>
-
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="bg-black border border-white p-8 rounded-lg shadow-lg max-w-md w-full"
+          >
+            <h2 className="text-3xl text-center text-red-500 mb-6 font-semibold">
+              Authentication Required
+            </h2>
+            <div className="mb-6">
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 border border-white rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Password"
+              />
+            </div>
+            {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );
