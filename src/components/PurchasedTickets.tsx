@@ -158,11 +158,11 @@ const PurchasedTickets: React.FC = () => {
             />
           </div>
 
-          <div className="flex justify-between items-center bg-gray-800 text-white rounded p-4 mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-gray-800 text-white rounded p-4 mb-4">
             <p className="text-lg font-medium">
               Total Sold Tickets: <span className="font-bold">{tickets.length}</span>
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-2 flex-wrap mt-2 sm:mt-0">
               <button
                 onClick={downloadCSV}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
@@ -183,73 +183,74 @@ const PurchasedTickets: React.FC = () => {
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-700 text-white text-left">
-                  <th className="p-2">FullName</th>
-                  <th className="p-2">Email Address</th>
-                  <th className="p-2">Phone Number</th>
-                  <th className="p-2">Date & Time</th>
-                  <th className="p-2">Redeemed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedTickets.map((ticket) => (
-                  <tr key={ticket.ticketid} className="text-left">
-                    <td className="p-2">{ticket.buyer_name}</td>
-                    <td className="p-2">{ticket.buyer_email}</td>
-                    <td className="p-2">{ticket.buyer_phone_number}</td>
-                    <td className="p-2">{formatDateTime(ticket.created_at)}</td>
-                    <td className="p-2">{ticket.is_redeemed ? 'Yes' : 'No'}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-700 text-white text-left">
+                    <th className="p-2">FullName</th>
+                    <th className="p-2">Email Address</th>
+                    <th className="p-2">Phone Number</th>
+                    <th className="p-2">Date & Time</th>
+                    <th className="p-2">Redeemed</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-
-          <div className="flex justify-center mt-4">
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-              (page) => (
+                </thead>
+                <tbody>
+                  {paginatedTickets.map((ticket) => (
+                    <tr key={ticket.ticketid} className="text-left">
+                      <td className="p-2 whitespace-nowrap">{ticket.buyer_name}</td>
+                      <td className="p-2 whitespace-nowrap">{ticket.buyer_email}</td>
+                      <td className="p-2 whitespace-nowrap">{ticket.buyer_phone_number}</td>
+                      <td className="p-2 whitespace-nowrap">{formatDateTime(ticket.created_at)}</td>
+                      <td className="p-2 whitespace-nowrap">{ticket.is_redeemed ? 'Yes' : 'No'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+                            <div className="mt-4 flex justify-between items-center">
                 <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`mx-1 px-3 py-1 ${
-                    currentPage === page ? 'bg-blue-600' : 'bg-gray-800'
-                  } text-white rounded`}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 bg-gray-700 text-white rounded ${
+                    currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-600'
+                  }`}
                 >
-                  {page}
+                  Previous
                 </button>
-              )
-            )}
-          </div>
+                <p>
+                  Page {currentPage} of {totalPages}
+                </p>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 bg-gray-700 text-white rounded ${
+                    currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-600'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
-        <div className="flex justify-center items-center min-h-screen bg-black">
-          <form
-            onSubmit={handlePasswordSubmit}
-            className="bg-black border border-white p-8 rounded-lg shadow-lg max-w-md w-full"
-          >
-            <h2 className="text-3xl text-center text-red-500 mb-6 font-semibold">
-              Authentication Required
-            </h2>
-            <div className="mb-6">
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border border-white rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Password"
-              />
-            </div>
-            {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
+          <form onSubmit={handlePasswordSubmit} className="w-full sm:w-1/2">
+            <input
+              type="password"
+              placeholder="Enter admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="p-2 border border-gray-700 rounded bg-gray-800 text-white w-full"
+            />
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition w-full mt-4"
             >
-              Submit
+              Login
             </button>
           </form>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
       )}
     </div>
@@ -257,3 +258,4 @@ const PurchasedTickets: React.FC = () => {
 };
 
 export default PurchasedTickets;
+
