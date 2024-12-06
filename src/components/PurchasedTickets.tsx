@@ -15,29 +15,38 @@ const PurchasedTickets: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const ticketsPerPage = 10;
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const data = await fetchAllTickets();
-        setTickets(data);
-        setFilteredTickets(data);
-      } catch (err) {
-        setError('Failed to fetch tickets.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTickets();
-  }, []);
+ useEffect(() => {
+  const fetchTickets = async () => {
+    try {
+      const data = await fetchAllTickets();
+      // Sort tickets by date (newest first)
+      const sortedData = data.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setTickets(sortedData);
+      setFilteredTickets(sortedData);
+    } catch (err) {
+      setError('Failed to fetch tickets.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchTickets();
+}, []);
 
-  useEffect(() => {
-    const filtered = tickets.filter(
+ useEffect(() => {
+  const filtered = tickets
+    .filter(
       (ticket) =>
         ticket.buyer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ticket.buyer_email.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    
+    .sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-    setFilteredTickets(filtered);
-  }, [searchQuery, tickets]);
+  setFilteredTickets(filtered);
+}, [searchQuery, tickets]);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
