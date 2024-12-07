@@ -42,32 +42,35 @@ const LandingPage: React.FC = () => {
         <h1>Welcome to TQG Ticket Shop</h1>
       </header>
 
-      <main className='bg-black'>
-        <p className='text-2xl font-bold text-white h-full'>Events</p>
-        {event ? (
-          <div className="border rounded-lg p-6 shadow-md bg-white">
-            {/* Event Poster */}
-            <img
-              src="/EventPoster.jpeg" 
-              alt={`${event.title} poster`}
-              className="w-full h-auto rounded-lg mb-4" 
-            />
-            <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
-            <p>Venue: {event.venue}</p> 
-            <p>Date: {new Date(event.date).toLocaleDateString()}</p>
-            {/* <p>Time: {event.time}</p>*/}
-            <p>Price: R{event.price.toFixed(2)}</p>
-            {/* <p>Available Tickets: {event.available_tickets} left</p> */}
-            <Link to={`/buy-ticket/${event.eventid}`}>
-              <button className="mt-4 px-6 py-2 bg-white text-black w-full border border-black rounded hover:bg-black hover:text-white transition">
-                Buy Ticket
-              </button>
-            </Link>
-          </div>
-        ) : (
-          <p className="text-gray-500">No events available right now.</p>
-        )}
-      </main>
+      <main className="bg-black">
+  <p className="text-2xl font-bold text-white h-full">Events</p>
+  {event ? (
+    <div className="border rounded-lg p-6 shadow-md bg-white">
+      {/* Event Poster */}
+      <img
+        src="/EventPoster.jpeg"
+        alt={`${event.title} poster`}
+        className="w-full h-auto rounded-lg mb-4"
+      />
+      <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
+      <p>Venue: {event.venue}</p>
+      <p>Date: {new Date(event.date).toLocaleDateString()}</p>
+      <p>Price: R{event.price.toFixed(2)}</p>
+      <p>Available Tickets: Sold Out</p>
+      <Link to={`/buy-ticket/${event.eventid}`}>
+        <button
+          className="mt-4 px-6 py-2 bg-gray-400 text-gray-700 w-full border border-gray-700 rounded cursor-not-allowed"
+          disabled
+        >
+          Sold Out
+        </button>
+      </Link>
+    </div>
+  ) : (
+    <p className="text-gray-500">No events available right now.</p>
+  )}
+</main>
+
 
       <footer className="text-center mt-8 text-gray-600">
         <p>&copy; 2024 TEQUILA GANG. All rights reserved.</p>
