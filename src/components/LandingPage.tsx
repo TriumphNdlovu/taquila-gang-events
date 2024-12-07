@@ -28,8 +28,8 @@ const LandingPage: React.FC = () => {
         setLoading(false);
       }
     };
-
-    getEvent();
+setLoading(false);
+    // getEvent();
   }, []);
 
   if (loading) {
