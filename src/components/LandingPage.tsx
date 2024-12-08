@@ -77,7 +77,7 @@ const LandingPage: React.FC = () => {
         <p>
           Designed by{' '}
           <a
-            href="https://www.linkedin.com/in/triumph-ndlovu-425b73274/"
+            href="https://triumph-portfolio-seven.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:animate-pulse transition-colors underline"
